@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
-public class GenericDAO<T, ID> {
+public class GenericDAO<T, ID> implements BaseDAO {
 
     protected SessionFactory sessionFactory = HibernateConfigurer.getSessionFactory();
     private Session session = getSession();
@@ -24,9 +24,9 @@ public class GenericDAO<T, ID> {
     }
 
     public T save(T entity) {
-        getSession().beginTransaction();
-        session.persist(entity);
-        session.getTransaction().commit();
+        Session currentSession = getSession();
+        currentSession.persist(entity);
+        currentSession.getTransaction().commit();
         return entity;
     }
 

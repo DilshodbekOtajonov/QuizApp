@@ -1,8 +1,14 @@
 package uz.jl.configs;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PasswordConfigurer {
+
+
     public static String encode(String rawPassword) {
         return BCrypt.hashpw(rawPassword, BCrypt.gensalt(12));
     }
