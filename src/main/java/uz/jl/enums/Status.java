@@ -4,6 +4,8 @@ import jakarta.persistence.AttributeConverter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
+
 @Getter
 @AllArgsConstructor
 public enum Status {
@@ -16,6 +18,8 @@ public enum Status {
     public static class StatusConvertor implements AttributeConverter<Status, String> {
         @Override
         public String convertToDatabaseColumn(Status attribute) {
+            if (Objects.isNull(attribute))
+                return null;
             return switch (attribute) {
                 case ACTIVE -> "Active User";
                 case PASSWORD_NOT_RESET -> "User that have not reset password";

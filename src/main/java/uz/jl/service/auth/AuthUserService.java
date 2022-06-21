@@ -1,7 +1,9 @@
 package uz.jl.service.auth;
 
 import com.google.gson.Gson;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import uz.jl.configs.ApplicationContextHolder;
@@ -17,6 +19,7 @@ import uz.jl.vo.auth.AuthUserVO;
 import uz.jl.vo.http.Response;
 
 import java.util.List;
+import java.util.Optional;
 
 public class AuthUserService extends AbstractDAO<AuthUserDAO> implements GenericCRUDService<
         AuthUserVO,
@@ -35,8 +38,13 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
     }
 
     @Override
+    @Transactional
     public Response<Long> create(@NonNull AuthUserCreateVO vo) {
         // TODO: 6/21/2022 validate input
+        Optional<AuthUser> optionalAuthUser = dao.findByUserName(vo.getUsername());
+        if (optionalAuthUser.isPresent()) {
+            throw new RuntimeException("Username already taken");
+        }
         AuthUser authUser = AuthUser
                 .childBuilder()
                 .username(vo.getUsername())
