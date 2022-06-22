@@ -3,6 +3,7 @@ package uz.jl.ui;
 import uz.jl.BaseUtils;
 import uz.jl.Colors;
 import uz.jl.configs.ApplicationContextHolder;
+import uz.jl.enums.AnswerStatus;
 import uz.jl.enums.AuthRole;
 import uz.jl.enums.QuestionStatus;
 import uz.jl.service.auth.AuthUserService;
@@ -12,6 +13,7 @@ import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 import uz.jl.vo.question.QuestionCreateVO;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -110,9 +112,9 @@ public class AdminUI {
 
 
 
-
-        Response<DataVO<Long>> response = service.create(vo);
-        print_response(response);
+//
+//        Response<DataVO<Long>> response = service.create(vo);
+//        print_response(response);
 
     }
 }
