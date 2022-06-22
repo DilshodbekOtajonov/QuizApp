@@ -2,8 +2,7 @@ package uz.jl.dao;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import uz.jl.dao.auth.AuthUserDAO;
-import uz.jl.domains.QuestionEntity;
+import uz.jl.domains.QA.QuestionEntity;
 
 /**
  * @author "Otajonov Dilshodbek
