@@ -16,4 +16,6 @@ public class PasswordConfigurer {
     public static boolean matchPassword(String rawPassword, String encodedPassword) {
         return BCrypt.checkpw(rawPassword, encodedPassword);
     }
+
+
 }

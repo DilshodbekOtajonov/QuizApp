@@ -3,15 +3,14 @@ package uz.jl.domains;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -35,5 +34,16 @@ public class Auditable implements BaseDomain {
 
     @Column(columnDefinition = "smallint default 0")
     @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
-    private boolean deleted;
+    private Boolean deleted;
+
+    public Auditable(Long id, Timestamp createdAt, Long createdBy, Timestamp updatedAt, Long updatedBy, Boolean deleted) {
+        this.id = id;
+        this.createdAt = createdAt;
+        if (Objects.isNull(createdBy))
+            createdBy = -1l;
+        this.createdBy = createdBy;
+        this.updatedAt = updatedAt;
+        this.updatedBy = updatedBy;
+        this.deleted = deleted;
+    }
 }

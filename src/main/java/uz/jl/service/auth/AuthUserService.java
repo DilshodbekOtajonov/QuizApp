@@ -1,21 +1,18 @@
 package uz.jl.service.auth;
 
-import com.google.gson.Gson;
 import jakarta.transaction.Transactional;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import uz.jl.configs.ApplicationContextHolder;
-import uz.jl.configs.PasswordConfigurer;
 import uz.jl.dao.AbstractDAO;
 import uz.jl.dao.auth.AuthUserDAO;
 import uz.jl.domains.auth.AuthUser;
 import uz.jl.service.GenericCRUDService;
 import uz.jl.utils.BaseUtils;
+import uz.jl.utils.validators.authUser.AuthUserValidator;
 import uz.jl.vo.auth.AuthUserCreateVO;
 import uz.jl.vo.auth.AuthUserUpdateVO;
 import uz.jl.vo.auth.AuthUserVO;
+import uz.jl.vo.auth.Session;
 import uz.jl.vo.http.Response;
 
 import java.util.List;
@@ -28,7 +25,7 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         Long> {
 
     private static AuthUserService instance;
-//    private final AuthUserValidator validator;
+    private final AuthUserValidator validator = ApplicationContextHolder.getBean(AuthUserValidator.class);
 
     private AuthUserService() {
         super(
@@ -40,19 +37,19 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
     @Override
     @Transactional
     public Response<Long> create(@NonNull AuthUserCreateVO vo) {
-        // TODO: 6/21/2022 validate input
-        Optional<AuthUser> optionalAuthUser = dao.findByUserName(vo.getUsername());
-        if (optionalAuthUser.isPresent()) {
-            throw new RuntimeException("Username already taken");
-        }
+
+        validator.validOnCreate(vo);
+
         AuthUser authUser = AuthUser
                 .childBuilder()
                 .username(vo.getUsername())
                 .password(utils.encode(vo.getPassword()))
                 .email(vo.getEmail())
                 .build();
+        System.out.println(authUser.getRole().name());
         dao.save(authUser);
-        return new Response<>(authUser.getId());
+        return new Response<>(authUser.getId(), true);
+
     }
 
     @Override
@@ -80,5 +77,28 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
             instance = new AuthUserService();
         }
         return instance;
+    }
+
+    public Response<AuthUserVO> login(String username, String password) {
+        Optional<AuthUser> userByUsername = dao.findByUserName(username);
+        if (userByUsername.isEmpty())
+            throw new RuntimeException("user not found");
+
+        AuthUser authUser = userByUsername.get();
+
+        boolean hasPasswordMatched = utils.matchPassword(password, authUser.getPassword());
+        if (!hasPasswordMatched)
+            throw new RuntimeException("Bad credentials");
+
+        AuthUserVO authUserVO = AuthUserVO.childBuilder()
+                .username(authUser.getUsername())
+                .role(authUser.getRole())
+                .email(authUser.getEmail())
+                .id(authUser.getId())
+                .createdAt(authUser.getCreatedAt().toLocalDateTime())
+                .build();
+
+        Session.setSessionUser(authUserVO);
+        return new Response<>(authUserVO, true);
     }
 }

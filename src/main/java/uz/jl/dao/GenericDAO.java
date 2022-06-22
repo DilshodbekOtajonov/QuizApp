@@ -25,8 +25,10 @@ public class GenericDAO<T, ID> implements BaseDAO {
 
     public T save(T entity) {
         Session currentSession = getSession();
+        session.beginTransaction();
         currentSession.persist(entity);
         currentSession.getTransaction().commit();
+        session.close();
         return entity;
     }
 
@@ -44,7 +46,11 @@ public class GenericDAO<T, ID> implements BaseDAO {
     }
 
     public T findById(ID id) {
-        return getSession().get(persistentClass, id);
+        Session session = getSession();
+        session.beginTransaction();
+        T t = session.get(persistentClass, id);
+        session.close();
+        return t;
     }
 
     public List<T> findAll() {

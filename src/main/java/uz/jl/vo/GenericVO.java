@@ -1,5 +1,11 @@
 package uz.jl.vo;
 
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public class GenericVO implements BaseVO {
-    private long id;
+    public Long id;
 }

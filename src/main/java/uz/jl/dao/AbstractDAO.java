@@ -2,7 +2,6 @@ package uz.jl.dao;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import uz.jl.configs.ApplicationContextHolder;
 import uz.jl.utils.BaseUtils;
 
 public class AbstractDAO<D extends BaseDAO> {
@@ -13,7 +12,7 @@ public class AbstractDAO<D extends BaseDAO> {
 
     public AbstractDAO(D dao, BaseUtils utils) {
         this.dao = dao;
-        this.gson = new GsonBuilder().create();
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.utils = utils;
     }
 }

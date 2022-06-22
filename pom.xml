@@ -64,7 +64,11 @@
             <artifactId>gson</artifactId>
             <version>2.9.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>uz.jl</groupId>
+            <artifactId>my-utils</artifactId>
+            <version>5.0</version>
+        </dependency>
 
     </dependencies>
 
