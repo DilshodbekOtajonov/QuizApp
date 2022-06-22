@@ -3,6 +3,7 @@ package uz.jl.ui;
 import uz.jl.BaseUtils;
 import uz.jl.Colors;
 import uz.jl.configs.ApplicationContextHolder;
+import uz.jl.enums.AnswerStatus;
 import uz.jl.enums.AuthRole;
 import uz.jl.enums.QuestionStatus;
 import uz.jl.service.auth.AuthUserService;
@@ -12,6 +13,7 @@ import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 import uz.jl.vo.question.QuestionCreateVO;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,12 +27,12 @@ public class AdminUI {
 
     public static void main(String[] args) {
         System.out.println("=================Admin page==================");
-        BaseUtils.println("Show Student List  -> 1");
-        BaseUtils.println("Show Teacher List  -> 2");
-        BaseUtils.println("Show Question List  -> 3");
+        BaseUtils.println("Show Student List -> 1");
+        BaseUtils.println("Show Teacher List -> 2");
+        BaseUtils.println("Show Question List -> 3");
         BaseUtils.println("Question create -> 4");
-        BaseUtils.println("Question update  -> 5");
-        BaseUtils.println("Question delete  -> 6");
+        BaseUtils.println("Question update -> 5");
+        BaseUtils.println("Question delete -> 6");
 
         String choice = BaseUtils.readText("choice ? ");
         switch (choice) {
@@ -62,14 +64,14 @@ public class AdminUI {
         String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
         BaseUtils.println(BaseUtils.gson.toJson(response), color);
     }
+
     private void questionCreate() {
 
         QuestionCreateVO vo = QuestionCreateVO.builder()
                 .body(BaseUtils.readText("body ? "))
                 .build();
 
-        AnswerCreateVO vo1=AnswerCreateVO.builder()
-                .build();
+
 
         int i = 0;
         System.out.println("Question status:\n");
@@ -90,29 +92,27 @@ public class AdminUI {
 
         System.out.println("Answer:\n");
 
-        AnswerCreateVO body1=new AnswerCreateVO();
+        AnswerCreateVO body1 = new AnswerCreateVO();
         body1.setBody(BaseUtils.readText("Enter the correct answer"));
         body1.setStatus(AnswerStatus.RIGHT);
 
-        AnswerCreateVO body2=new AnswerCreateVO();
+        AnswerCreateVO body2 = new AnswerCreateVO();
         body2.setBody(BaseUtils.readText("Enter the incorrect answer"));
         body2.setStatus(AnswerStatus.WRONG);
 
-        AnswerCreateVO body3=new AnswerCreateVO();
+        AnswerCreateVO body3 = new AnswerCreateVO();
         body3.setBody(BaseUtils.readText("Enter the incorrect answer"));
         body3.setStatus(AnswerStatus.WRONG);
 
-        AnswerCreateVO body4=new AnswerCreateVO();
+        AnswerCreateVO body4 = new AnswerCreateVO();
         body4.setBody(BaseUtils.readText("Enter the incorrect answer"));
         body4.setStatus(AnswerStatus.WRONG);
 
-        vo.setAnswers(Arrays.asList(body1,body2,body3,body4));
+        vo.setAnswers(List.of(body1,body2,body3,body4));
 
 
 
 
-        Response<DataVO<Long>> response = service.create(vo);
-        print_response(response);
 
     }
 }

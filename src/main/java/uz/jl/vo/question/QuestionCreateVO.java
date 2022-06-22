@@ -9,6 +9,7 @@ import uz.jl.domains.QA.AnswerEntity;
 import uz.jl.enums.QuestionStatus;
 import uz.jl.enums.Subject;
 import uz.jl.vo.BaseVO;
+import uz.jl.vo.answer.AnswerCreateVO;
 
 import java.util.List;
 
@@ -26,6 +27,6 @@ public class QuestionCreateVO implements BaseVO {
 
     private String body;
     private QuestionStatus status;
-    private List<AnswerEntity> answers;
+    private List<AnswerCreateVO> answers;
     private Subject subject;
 }
