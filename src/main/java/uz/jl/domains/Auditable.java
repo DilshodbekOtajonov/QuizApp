@@ -24,7 +24,7 @@ public class Auditable implements BaseDomain {
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
 
-    @Column(columnDefinition = "bigint default -1")
+    @Column(columnDefinition = "bigint default -1", nullable = false)
     private Long createdBy;
 
     @Column
