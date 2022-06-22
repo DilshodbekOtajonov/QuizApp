@@ -1,8 +1,7 @@
 package uz.jl.vo.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import uz.jl.enums.AuthRole;
 
 import java.util.Objects;
 
@@ -12,25 +11,30 @@ import java.util.Objects;
  * jira/IntelliJ IDEA
  */
 public class Session {
-    private static SessionUser sessionUser;
+    public static SessionUser sessionUser;
 
 
     public static void setSessionUser(AuthUserVO authUserVO) {
         sessionUser = new SessionUser(authUserVO);
     }
 
-    private static class SessionUser {
+    @Getter
+    public static class SessionUser {
 
         private Long id;
         private String username;
+
+        public AuthRole role;
 
         public SessionUser(AuthUserVO session) {
             if (Objects.nonNull(session)) {
                 this.id = session.getId();
                 this.username = session.getUsername();
-            }else {
-                id=null;
-                username=null;
+                this.role = session.getRole();
+            } else {
+                id = null;
+                username = null;
+                role = null;
             }
         }
 

@@ -5,5 +5,8 @@ package uz.jl.domains;
  * @since 6/22/22 2:14 PM (Wednesday)
  * QuizApp/IntelliJ IDEA
  */
-public class QuestionEntity {
+public class QuestionEntity extends Auditable {
+
+
+
 }
