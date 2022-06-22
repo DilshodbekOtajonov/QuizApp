@@ -1,8 +1,6 @@
 package uz.jl.vo.answer;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import uz.jl.enums.AnswerStatus;
 import uz.jl.vo.BaseVO;
 
@@ -15,6 +13,8 @@ import uz.jl.vo.BaseVO;
 @Builder
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnswerCreateVO implements BaseVO {
 
     private String body;
