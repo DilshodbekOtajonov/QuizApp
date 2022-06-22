@@ -15,7 +15,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user",schema = "auth")
-public class AuthUser extends Auditable {
+public class
+AuthUser extends Auditable {
 
     @Column(unique = true, nullable = false)
     private String username;
@@ -25,6 +26,7 @@ public class AuthUser extends Auditable {
 
     @Column(nullable = false, unique = true)
     private String email;
+
 
     @Enumerated(EnumType.STRING)
     private AuthRole role;

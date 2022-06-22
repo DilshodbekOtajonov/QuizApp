@@ -18,6 +18,7 @@ import uz.jl.vo.http.AppErrorVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -129,5 +130,19 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
 
         Session.setSessionUser(authUserVO);
         return new Response<>(new DataVO<>(authUserVO), 200);
+    }
+
+    public void setRole(Long user_id, AuthRole option) {
+
+        Optional<AuthUser> findById = Optional.ofNullable(dao.findById(user_id));
+        if (findById.isEmpty())
+            throw new RuntimeException("user not found");
+
+        AuthUser authUser = findById.get();
+
+        authUser.setRole(option);
+
+        dao.update(authUser);
+
     }
 }
