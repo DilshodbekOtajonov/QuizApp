@@ -15,7 +15,9 @@ public class Session {
 
 
     public static void setSessionUser(AuthUserVO authUserVO) {
-        sessionUser = new SessionUser(authUserVO);
+        if (Objects.isNull(authUserVO))
+            sessionUser = null;
+        else sessionUser = new SessionUser(authUserVO);
     }
 
     @Getter
@@ -27,15 +29,10 @@ public class Session {
         public AuthRole role;
 
         public SessionUser(AuthUserVO session) {
-            if (Objects.nonNull(session)) {
-                this.id = session.getId();
-                this.username = session.getUsername();
-                this.role = session.getRole();
-            } else {
-                id = null;
-                username = null;
-                role = null;
-            }
+
+            this.id = session.getId();
+            this.username = session.getUsername();
+            this.role = session.getRole();
         }
 
     }

@@ -15,6 +15,4 @@ public class UserUI {
         BaseUtils.println("");
         BaseUtils.println("");
     }
-
-
 }
