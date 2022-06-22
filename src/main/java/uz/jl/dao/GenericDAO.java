@@ -38,7 +38,11 @@ public class GenericDAO<T, ID> implements BaseDAO {
         if (Objects.isNull(entity)) {
             throw new SQLException("Object not found by given id '%s'".formatted(id));
         }
-        getSession().remove(entity);
+        Session session = getSession();
+        session.beginTransaction();
+        session.remove(entity);
+
+        session.close();
     }
 
     public void update(T entity) {
@@ -54,9 +58,12 @@ public class GenericDAO<T, ID> implements BaseDAO {
     }
 
     public List<T> findAll() {
-        return getSession()
-                .createQuery("from " + persistentClass.getSimpleName(), persistentClass)
+        Session session = getSession();
+        session.beginTransaction();
+        List<T> resultList = session.createQuery("from " + persistentClass.getSimpleName(), persistentClass)
                 .getResultList();
+        session.close();
+        return resultList;
     }
 
     protected Session getSession() {

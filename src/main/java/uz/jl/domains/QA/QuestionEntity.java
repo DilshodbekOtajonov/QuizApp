@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import uz.jl.domains.Auditable;
+import uz.jl.domains.SubjectEntity;
 import uz.jl.enums.QuestionStatus;
 import uz.jl.enums.Subject;
 
@@ -28,8 +29,9 @@ public class QuestionEntity extends Auditable {
     @JoinColumn(name = "question_id")
     private List<AnswerEntity> answers;
 
-    @Enumerated(EnumType.STRING)
-    private Subject subject;
+    @OneToOne(cascade = CascadeType.ALL, targetEntity = SubjectEntity.class)
+    @JoinColumn(name = "subject_id")
+    private SubjectEntity subject;
 
     @Builder(builderMethodName = "childBuilder")
     public QuestionEntity(Long id, Timestamp createdAt, Long createdBy, Timestamp updatedAt, Long updatedBy, Boolean deleted, String body, List<AnswerEntity> answers) {

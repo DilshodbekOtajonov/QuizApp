@@ -6,7 +6,9 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import uz.jl.dao.GenericDAO;
 import uz.jl.domains.auth.AuthUser;
+import uz.jl.enums.AuthRole;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -43,4 +45,13 @@ public class AuthUserDAO extends GenericDAO<AuthUser, Long> {
         session.close();
         return result;
     }
+    public List<AuthUser> findAll(AuthRole role) {
+        Session session = getSession();
+        session.beginTransaction();
+        List<AuthUser> resultList = session.createQuery("select t from AuthUser t where t.role=:role", AuthUser.class).setParameter("role",role).getResultList();
+
+        session.close();
+        return resultList;
+    }
+
 }

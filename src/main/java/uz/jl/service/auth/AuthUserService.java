@@ -6,6 +6,7 @@ import uz.jl.configs.ApplicationContextHolder;
 import uz.jl.dao.AbstractDAO;
 import uz.jl.dao.auth.AuthUserDAO;
 import uz.jl.domains.auth.AuthUser;
+import uz.jl.enums.AuthRole;
 import uz.jl.service.GenericCRUDService;
 import uz.jl.utils.BaseUtils;
 import uz.jl.utils.validators.authUser.AuthUserValidator;
@@ -13,9 +14,11 @@ import uz.jl.vo.auth.AuthUserCreateVO;
 import uz.jl.vo.auth.AuthUserUpdateVO;
 import uz.jl.vo.auth.AuthUserVO;
 import uz.jl.vo.auth.Session;
+import uz.jl.vo.http.AppErrorVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,6 +76,31 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         return null;
     }
 
+    public Response<DataVO<List<AuthUserVO>>> getAll(AuthRole role) {
+        List<AuthUserVO> response = new ArrayList<>();
+        List<AuthUser> resultList = dao.findAll(role);
+        if (resultList.isEmpty()) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("No user find with role '%s'".formatted(role.name()))
+                    .build()));
+        }
+
+        for (AuthUser authUser : resultList) {
+            AuthUserVO authUserVO = AuthUserVO.childBuilder()
+                    .id(authUser.getId())
+                    .email(authUser.getEmail())
+                    .username(authUser.getUsername())
+                    .role(authUser.getRole())
+                    .email(authUser.getEmail())
+                    .createdAt(authUser.getCreatedAt().toLocalDateTime())
+                    .build();
+
+            response.add(authUserVO);
+        }
+
+        return new Response<>(new DataVO<>(response), 200);
+    }
+
     public static AuthUserService getInstance() {
         if (instance == null) {
             instance = new AuthUserService();
@@ -100,6 +128,6 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
                 .build();
 
         Session.setSessionUser(authUserVO);
-        return new Response<>(new DataVO<>(authUserVO),200);
+        return new Response<>(new DataVO<>(authUserVO), 200);
     }
 }
