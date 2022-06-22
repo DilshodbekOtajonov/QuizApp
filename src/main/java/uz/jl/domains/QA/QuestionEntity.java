@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import uz.jl.domains.Auditable;
 import uz.jl.enums.QuestionStatus;
+import uz.jl.enums.Subject;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -26,6 +27,9 @@ public class QuestionEntity extends Auditable {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "question_id")
     private List<AnswerEntity> answers;
+
+    @Enumerated(EnumType.STRING)
+    private Subject subject;
 
     @Builder(builderMethodName = "childBuilder")
     public QuestionEntity(Long id, Timestamp createdAt, Long createdBy, Timestamp updatedAt, Long updatedBy, Boolean deleted, String body, List<AnswerEntity> answers) {

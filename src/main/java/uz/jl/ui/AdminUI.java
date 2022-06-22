@@ -1,6 +1,8 @@
 package uz.jl.ui;
 
 import uz.jl.BaseUtils;
+import uz.jl.configs.ApplicationContextHolder;
+import uz.jl.service.StudentService;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -8,6 +10,8 @@ import uz.jl.BaseUtils;
  * QuizApp/IntelliJ IDEA
  */
 public class AdminUI {
+
+    static StudentService studentService = ApplicationContextHolder.getBean(StudentService.class);
 
     public static void main(String[] args) {
         System.out.println("=================Admin page==================");
@@ -19,9 +23,13 @@ public class AdminUI {
         BaseUtils.println("Question delete  -> 6");
 
         String choice = BaseUtils.readText("choice ? ");
-        switch (choice){
-
+        switch (choice) {
+            case "1" -> showStudentList();
         }
+
+    }
+
+    private static void showStudentList() {
 
     }
 }
