@@ -1,71 +1,18 @@
 package uz.jl.vo.http;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class Response<T> {
-    private T body;
-    private Integer total;
-    private ErrorVO error;
-    @Getter
-    private boolean ok;
-
-    public Response(T body, boolean ok) {
-        this(body, null);
-        this.ok = ok;
+    private final T data;
+    private Integer status;
+    public Response(T data) {
+        this.data = data;
     }
-
-    public Response(T body, Integer total) {
-        this.body = body;
-        this.total = total;
-    }
-
-    public Response(ErrorVO error, boolean ok) {
-        this.error = error;
-        this.ok = ok;
-    }
-
-    public static ErrorVO errorBuilder() {
-        return new ErrorVO();
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class ErrorVO {
-        private String friendlyMessage;
-        private String developerMessage;
-        private int status;
-
-        private Timestamp timestamp;
-
-
-        public ErrorVO friendlyMessage(String friendlyMessage) {
-            this.friendlyMessage = friendlyMessage;
-            return this;
-        }
-
-        public ErrorVO developerMessage(String developerMessage) {
-            this.developerMessage = developerMessage;
-            return this;
-        }
-
-        public ErrorVO status(int status) {
-            this.status = status;
-            return this;
-        }
-
-        public Response<ErrorVO> build() {
-            ErrorVO errorVO = new ErrorVO(
-                    this.friendlyMessage,
-                    this.developerMessage,
-                    this.status,
-                    Timestamp.valueOf(LocalDateTime.now()));
-            return new Response<>(errorVO, false);
-        }
+    public Response(T data, Integer status) {
+        this.data = data;
+        this.status = status;
     }
 }

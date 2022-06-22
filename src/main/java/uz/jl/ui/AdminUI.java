@@ -8,6 +8,6 @@ package uz.jl.ui;
 public class AdminUI {
 
     public static void main(String[] args) {
-
+        System.out.println("Admin page");
     }
 }

@@ -9,6 +9,7 @@ import uz.jl.service.auth.AuthUserService;
 import uz.jl.vo.auth.AuthUserCreateVO;
 import uz.jl.vo.auth.AuthUserVO;
 import uz.jl.vo.auth.Session;
+import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 
 import java.util.Objects;
@@ -39,12 +40,13 @@ public class AuthUI {
                 default -> BaseUtils.println("Invalid choice");
 
             }
-        }else {
-            switch (Session.sessionUser.getRole()){
+        } else {
+            switch (Session.sessionUser.getRole()) {
                 case USER -> UserUI.main(args);
                 case ADMIN -> AdminUI.main(args);
             }
         }
+
     }
 
     private void register() {
@@ -53,12 +55,12 @@ public class AuthUI {
                 .password(BaseUtils.readText("password ? "))
                 .email(BaseUtils.readText("email ? "))
                 .build();
-        Response<Long> response = service.create(vo);
+        Response<DataVO<Long>> response = service.create(vo);
         print_response(response);
     }
 
     private void login() {
-        Response<AuthUserVO> response = service.login(
+        Response<DataVO<AuthUserVO>> response = service.login(
                 BaseUtils.readText("username ? "),
                 BaseUtils.readText("password ? ")
         );
@@ -66,10 +68,9 @@ public class AuthUI {
 
     }
 
-    private static void print_response(Response response) {
-        String color = Objects.nonNull(response.getError()) ? Colors.RED : Colors.GREEN;
+
+    public static void print_response(Response response) {
+        String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
         BaseUtils.println(BaseUtils.gson.toJson(response), color);
     }
-
-
 }

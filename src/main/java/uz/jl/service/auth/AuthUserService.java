@@ -13,6 +13,7 @@ import uz.jl.vo.auth.AuthUserCreateVO;
 import uz.jl.vo.auth.AuthUserUpdateVO;
 import uz.jl.vo.auth.AuthUserVO;
 import uz.jl.vo.auth.Session;
+import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
 
     @Override
     @Transactional
-    public Response<Long> create(@NonNull AuthUserCreateVO vo) {
+    public Response<DataVO<Long>> create(@NonNull AuthUserCreateVO vo) {
 
         validator.validOnCreate(vo);
 
@@ -48,27 +49,27 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
                 .build();
         System.out.println(authUser.getRole().name());
         dao.save(authUser);
-        return new Response<>(authUser.getId(), true);
+        return new Response<>(new DataVO<>(authUser.getId()), 200);
 
     }
 
     @Override
-    public Response<Void> update(@NonNull AuthUserUpdateVO vo) {
+    public Response<DataVO<Void>> update(@NonNull AuthUserUpdateVO vo) {
         return null;
     }
 
     @Override
-    public Response<Void> delete(@NonNull Long id) {
+    public Response<DataVO<Void>> delete(@NonNull Long id) {
         return null;
     }
 
     @Override
-    public Response<AuthUserVO> get(@NonNull Long id) {
+    public Response<DataVO<AuthUserVO>> get(@NonNull Long id) {
         return null;
     }
 
     @Override
-    public Response<List<AuthUserVO>> getAll() {
+    public Response<DataVO<List<AuthUserVO>>> getAll() {
         return null;
     }
 
@@ -79,7 +80,7 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         return instance;
     }
 
-    public Response<AuthUserVO> login(String username, String password) {
+    public Response<DataVO<AuthUserVO>> login(String username, String password) {
         Optional<AuthUser> userByUsername = dao.findByUserName(username);
         if (userByUsername.isEmpty())
             throw new RuntimeException("user not found");
@@ -99,6 +100,6 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
                 .build();
 
         Session.setSessionUser(authUserVO);
-        return new Response<>(authUserVO, true);
+        return new Response<>(new DataVO<>(authUserVO),200);
     }
 }

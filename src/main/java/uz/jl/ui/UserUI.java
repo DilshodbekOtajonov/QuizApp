@@ -7,6 +7,6 @@ package uz.jl.ui;
  */
 public class UserUI {
     public static void main(String[] args) {
-
+        System.out.println("User Page");
     }
 }

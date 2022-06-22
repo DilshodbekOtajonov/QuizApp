@@ -3,6 +3,7 @@ package uz.jl.service;
 import lombok.NonNull;
 import uz.jl.vo.BaseVO;
 import uz.jl.vo.GenericVO;
+import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 
 import java.io.Serializable;
@@ -19,13 +20,13 @@ public interface GenericCRUDService<
         CVO extends BaseVO,
         UVO extends GenericVO,
         ID extends Serializable> {
-    Response<ID> create(@NonNull CVO vo);
+    Response<DataVO<ID>> create(@NonNull CVO vo);
 
-    Response<Void> update(@NonNull UVO vo);
+    Response<DataVO<Void>> update(@NonNull UVO vo);
 
-    Response<Void> delete(@NonNull ID id);
+    Response<DataVO<Void>> delete(@NonNull ID id);
 
-    Response<VO> get(@NonNull ID id);
+    Response<DataVO<VO>> get(@NonNull ID id);
 
-    Response<List<VO>> getAll();
+    Response<DataVO<List<VO>>> getAll();
 }
