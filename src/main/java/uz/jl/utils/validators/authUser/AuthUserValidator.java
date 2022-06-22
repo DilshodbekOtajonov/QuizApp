@@ -15,7 +15,7 @@ import java.util.Objects;
  * @since 6/22/22 7:35 AM (Wednesday)
  * jira/IntelliJ IDEA
  */
-public class AuthUserValidator extends GenericValidator<AuthUserCreateVO, AuthUserUpdateVO, Long> {
+public class  AuthUserValidator extends GenericValidator<AuthUserCreateVO, AuthUserUpdateVO, Long> {
 
     private static AuthUserValidator instance;
     AuthUserDAO authUserDAO = ApplicationContextHolder.getBean(AuthUserDAO.class);

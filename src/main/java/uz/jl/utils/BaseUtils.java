@@ -14,6 +14,7 @@ public class BaseUtils {
 
     public boolean matchPassword(String rawPassword, String encodedPassword) {
         return PasswordConfigurer.matchPassword(rawPassword, encodedPassword);
+
     }
 
     public static BaseUtils getInstance() {

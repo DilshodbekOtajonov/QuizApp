@@ -3,6 +3,7 @@ package uz.jl.dao.auth;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.hibernate.Session;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import uz.jl.dao.GenericDAO;
 import uz.jl.domains.auth.AuthUser;
@@ -54,4 +55,15 @@ public class AuthUserDAO extends GenericDAO<AuthUser, Long> {
         return resultList;
     }
 
+
+    public void update(AuthUser entity) {
+        Session session = getSession();
+        session.beginTransaction();
+
+        Query nativeQuery = session.createQuery("update AuthUser  set role=:role where id=:id");
+        nativeQuery.setParameter("role",entity.getRole().toString());
+        nativeQuery.setParameter("id",entity.getId());
+        session.getTransaction().commit();
+        session.close();
+    }
 }
