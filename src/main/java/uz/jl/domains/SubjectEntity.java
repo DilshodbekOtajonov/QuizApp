@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  */
 
 @Entity
-@Table(schema = "subject")
+@Table(schema = "subject",name = "subjects")
 @NoArgsConstructor
 public class SubjectEntity extends Auditable {
     private String title;

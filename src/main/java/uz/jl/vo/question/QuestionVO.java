@@ -1,6 +1,12 @@
 package uz.jl.vo.question;
 
+import lombok.Builder;
+import uz.jl.domains.QA.AnswerEntity;
+import uz.jl.enums.QuestionStatus;
+import uz.jl.enums.Subject;
 import uz.jl.vo.GenericVO;
+
+import java.util.List;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -8,7 +14,18 @@ import uz.jl.vo.GenericVO;
  * QuizApp/IntelliJ IDEA
  */
 public class QuestionVO extends GenericVO {
-    public QuestionVO(Long id) {
+
+    private String body;
+    private QuestionStatus status;
+    private List<AnswerEntity> answers;
+    private Subject subject;
+
+    @Builder(builderMethodName = "childBuilder")
+    public QuestionVO(Long id, String body, QuestionStatus status, List<AnswerEntity> answers, Subject subject) {
         super(id);
+        this.body = body;
+        this.status = status;
+        this.answers = answers;
+        this.subject = subject;
     }
 }

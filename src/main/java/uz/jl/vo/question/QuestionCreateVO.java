@@ -1,6 +1,10 @@
 package uz.jl.vo.question;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import uz.jl.domains.QA.AnswerEntity;
 import uz.jl.enums.QuestionStatus;
 import uz.jl.enums.Subject;
@@ -13,11 +17,15 @@ import java.util.List;
  * @since 6/22/22 6:22 PM (Wednesday)
  * QuizApp/IntelliJ IDEA
  */
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Data
 public class QuestionCreateVO implements BaseVO {
 
     private String body;
     private QuestionStatus status;
     private List<AnswerEntity> answers;
-
     private Subject subject;
 }
