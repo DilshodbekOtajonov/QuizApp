@@ -3,13 +3,17 @@ package uz.jl.ui;
 import uz.jl.BaseUtils;
 import uz.jl.Colors;
 import uz.jl.configs.ApplicationContextHolder;
-import uz.jl.domains.auth.AuthUser;
+import uz.jl.enums.AnswerStatus;
 import uz.jl.enums.AuthRole;
+import uz.jl.enums.QuestionStatus;
 import uz.jl.service.auth.AuthUserService;
+import uz.jl.vo.answer.AnswerCreateVO;
 import uz.jl.vo.auth.AuthUserVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
+import uz.jl.vo.question.QuestionCreateVO;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,30 +33,13 @@ public class AdminUI {
         BaseUtils.println("Question create -> 4");
         BaseUtils.println("Question update  -> 5");
         BaseUtils.println("Question delete  -> 6");
-        BaseUtils.println("Set role -> 7");
 
         String choice = BaseUtils.readText("choice ? ");
         switch (choice) {
             case "1" -> showStudentList();
             case "2" -> showTeacherList();
-            case "7" -> setRole();
         }
         main(args);
-    }
-
-    private static void setRole() {
-        Long user_id = Long.valueOf(BaseUtils.readText("Insert user id: "));
-        BaseUtils.println("Choose role: ");
-        BaseUtils.println("1.ADMIN\n2.TEACHER\n3.STUDENT");
-        String choice = BaseUtils.readText("option: ");
-        AuthRole role=null;
-        switch (choice){
-            case "1" ->role= AuthRole.ADMIN;
-            default ->role= AuthRole.STUDENT;
-            case "2" ->role= AuthRole.TEACHER;
-        }
-
-        authUserService.setRole(user_id,role);
     }
 
     private static void showStudentList() {
@@ -76,5 +63,58 @@ public class AdminUI {
     public static void print_response(Response response) {
         String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
         BaseUtils.println(BaseUtils.gson.toJson(response), color);
+    }
+    private void questionCreate() {
+
+        QuestionCreateVO vo = QuestionCreateVO.builder()
+                .body(BaseUtils.readText("body ? "))
+                .build();
+
+        AnswerCreateVO vo1=AnswerCreateVO.builder()
+                .build();
+
+        int i = 0;
+        System.out.println("Question status:\n");
+        for (QuestionStatus value : QuestionStatus.values()) {
+            i++;
+            System.out.println(i + " " + value);
+
+        }
+        String choice = BaseUtils.readText("choice ? ");
+        switch (choice) {
+            case "1" -> vo.setStatus(QuestionStatus.EASY);
+            case "2" -> vo.setStatus(QuestionStatus.MEDIUM);
+            case "3" -> vo.setStatus(QuestionStatus.HARD);
+
+            default -> BaseUtils.println("Invalid choice");
+
+        }
+
+        System.out.println("Answer:\n");
+
+        AnswerCreateVO body1=new AnswerCreateVO();
+        body1.setBody(BaseUtils.readText("Enter the correct answer"));
+        body1.setStatus(AnswerStatus.RIGHT);
+
+        AnswerCreateVO body2=new AnswerCreateVO();
+        body2.setBody(BaseUtils.readText("Enter the incorrect answer"));
+        body2.setStatus(AnswerStatus.WRONG);
+
+        AnswerCreateVO body3=new AnswerCreateVO();
+        body3.setBody(BaseUtils.readText("Enter the incorrect answer"));
+        body3.setStatus(AnswerStatus.WRONG);
+
+        AnswerCreateVO body4=new AnswerCreateVO();
+        body4.setBody(BaseUtils.readText("Enter the incorrect answer"));
+        body4.setStatus(AnswerStatus.WRONG);
+
+        vo.setAnswers(Arrays.asList(body1,body2,body3,body4));
+
+
+
+//
+//        Response<DataVO<Long>> response = service.create(vo);
+//        print_response(response);
+
     }
 }
