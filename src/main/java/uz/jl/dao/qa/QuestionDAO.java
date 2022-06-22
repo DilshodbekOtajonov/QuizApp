@@ -1,7 +1,8 @@
-package uz.jl.dao;
+package uz.jl.dao.qa;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import uz.jl.dao.GenericDAO;
 import uz.jl.domains.QA.QuestionEntity;
 
 /**

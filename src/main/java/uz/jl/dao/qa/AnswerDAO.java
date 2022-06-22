@@ -1,5 +1,6 @@
-package uz.jl.dao;
+package uz.jl.dao.qa;
 
+import uz.jl.dao.GenericDAO;
 import uz.jl.domains.QA.AnswerEntity;
 
 /**

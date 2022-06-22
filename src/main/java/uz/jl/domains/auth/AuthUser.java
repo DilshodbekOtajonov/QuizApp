@@ -43,7 +43,7 @@ public class AuthUser extends Auditable {
         this.email = email;
 
         if (Objects.isNull(role))
-            role = AuthRole.USER;
+            role = AuthRole.STUDENT;
         this.role = role;
 
         if (Objects.isNull(status))
