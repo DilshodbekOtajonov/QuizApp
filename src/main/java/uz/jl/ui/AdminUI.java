@@ -41,6 +41,7 @@ public class AdminUI {
             BaseUtils.println("Question update -> 5");
             BaseUtils.println("Question delete -> 6");
             BaseUtils.println("Set role to User -> 7");
+            BaseUtils.println("Change auth info -> 8");
             BaseUtils.println("Log out-> l");
             BaseUtils.println("Quit -> q");
             String choice = BaseUtils.readText("choice ? ");
@@ -51,6 +52,7 @@ public class AdminUI {
                 case "4" -> questionCreate();
                 case "5" -> questionDelete();
                 case "7" -> setRoleToUser();
+                case "8" -> changeAuthInfo();
                 case "l" -> Session.setSessionUser(null);
                 case "q" -> {
                     BaseUtils.println("Bye");
@@ -61,7 +63,7 @@ public class AdminUI {
         }
     }
 
-    private static void changes() {
+    private static void changeAuthInfo() {
 
         BaseUtils.println("Change your username -> 1");
         BaseUtils.println("Change your password -> 2");

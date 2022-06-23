@@ -11,9 +11,7 @@ import uz.jl.vo.auth.AuthUserPasswordResetVO;
 import uz.jl.vo.auth.Session;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
-import uz.jl.vo.subject.SubjectVO;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -25,8 +23,6 @@ public class StudentUI {
 
     private static final StudentUI studentUI = new StudentUI();
     private final QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
-
-    private final SubjectService subjectService = ApplicationContextHolder.getBean(SubjectService.class);
     private static final AuthUserService authUserService = ApplicationContextHolder.getBean(AuthUserService.class);
 
     public static void main(String[] args) {
@@ -55,11 +51,9 @@ public class StudentUI {
     }
 
     private void updateAuthInfo() {
-        // TODO: 6/23/22 ask change password
-        // TODO: 6/23/22 ask change username
 
         BaseUtils.println("1.Change username");
-        BaseUtils.println("1.Change password");
+        BaseUtils.println("2.Change password");
         String option = BaseUtils.readText("Choose option: ");
         switch (option) {
             case "1" -> changeUserName();
@@ -76,12 +70,17 @@ public class StudentUI {
                 .confirmNewPassword(BaseUtils.readText("confirm new password: "))
                 .build();
 
-        authUserService.changePassword(resetVO);
+        Response<DataVO<Void>> response = authUserService.changePassword(resetVO);
+        if(response.getStatus()!=200)
+            print_response(response);
+
     }
 
     public static void changeUserName() {
         String newUsername = BaseUtils.readText("Insert new username: ");
-        authUserService.changeUsername(newUsername);
+        Response<DataVO<Void>> response = authUserService.changeUsername(newUsername);
+        if(response.getStatus()!=200)
+            print_response(response);
     }
 
 
@@ -110,5 +109,9 @@ public class StudentUI {
 
         questionService.getAll(subjectName, level, numberOfQuestions);
 
+    }
+    public static void print_response(Response response) {
+        String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
+        BaseUtils.println(BaseUtils.gson.toJson(response), color);
     }
 }

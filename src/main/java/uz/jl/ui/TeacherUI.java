@@ -5,7 +5,6 @@ import uz.jl.vo.auth.Session;
 
 import java.util.Objects;
 
-
 /**
  * @author "Otajonov Dilshodbek
  * @since 6/23/22 8:08 AM (Thursday)
@@ -41,6 +40,7 @@ public class TeacherUI {
             case "2" -> StudentUI.changePassword();
             default -> BaseUtils.println("Wrong option");
         }
+
     }
 
     private static void crud() {

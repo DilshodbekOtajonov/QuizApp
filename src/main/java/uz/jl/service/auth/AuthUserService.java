@@ -119,13 +119,17 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
     public Response<DataVO<AuthUserVO>> login(String username, String password) {
         Optional<AuthUser> userByUsername = dao.findByUserName(username);
         if (userByUsername.isEmpty())
-            throw new RuntimeException("user not found");
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("user not found")
+                    .build()));
 
         AuthUser authUser = userByUsername.get();
 
         boolean hasPasswordMatched = utils.matchPassword(password, authUser.getPassword());
         if (!hasPasswordMatched)
-            throw new RuntimeException("Bad credentials");
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Bad credentials")
+                    .build()));
 
         AuthUserVO authUserVO = AuthUserVO.childBuilder()
                 .username(authUser.getUsername())
@@ -184,7 +188,6 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         return new Response<>(new DataVO<>(null), 200);
     }
 
-    ;
 
     public static AuthUserService getInstance() {
         if (instance == null) {
