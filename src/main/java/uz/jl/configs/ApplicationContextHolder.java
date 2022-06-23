@@ -2,11 +2,13 @@ package uz.jl.configs;
 
 import uz.jl.dao.auth.AuthUserDAO;
 import uz.jl.dao.qa.QuestionDAO;
+import uz.jl.service.QuestionService;
 import uz.jl.service.StudentService;
 import uz.jl.service.auth.AuthUserService;
 import uz.jl.ui.AuthUI;
 import uz.jl.utils.BaseUtils;
 import uz.jl.utils.validators.authUser.AuthUserValidator;
+import uz.jl.utils.validators.question.QuestionValidator;
 
 public class ApplicationContextHolder {
 
@@ -19,6 +21,8 @@ public class ApplicationContextHolder {
             case "AuthUserValidator" -> (T) AuthUserValidator.getInstance();
             case "StudentService" -> (T) StudentService.getInstance();
             case "QuestionDAO" -> (T) QuestionDAO.getInstance();
+            case "QuestionService" -> (T) QuestionService.getInstance();
+            case "QuestionValidator" -> (T) QuestionValidator.getInstance();
             default -> throw new RuntimeException("Bean Not Found");
         };
     }

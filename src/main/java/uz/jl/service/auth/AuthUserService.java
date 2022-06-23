@@ -126,7 +126,6 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
                 .id(authUser.getId())
                 .createdAt(authUser.getCreatedAt().toLocalDateTime())
                 .build();
-
         Session.setSessionUser(authUserVO);
         return new Response<>(new DataVO<>(authUserVO), 200);
     }

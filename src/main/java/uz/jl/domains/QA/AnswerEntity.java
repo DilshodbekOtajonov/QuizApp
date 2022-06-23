@@ -4,9 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import uz.jl.domains.Auditable;
 import uz.jl.enums.AnswerStatus;
 
@@ -19,6 +17,8 @@ import java.sql.Timestamp;
  */
 
 @Entity
+@Getter
+@ToString
 @Table(name = "answers", schema = "question")
 @NoArgsConstructor
 @AllArgsConstructor
