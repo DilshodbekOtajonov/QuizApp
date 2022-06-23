@@ -47,7 +47,6 @@ public class StudentUI {
 
     private void showHistory() {
         // TODO: 6/23/22 show list of variants
-
         // TODO: 6/23/22 ask id of the one of variants and show variant in details
     }
 
