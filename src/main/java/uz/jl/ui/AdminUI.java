@@ -14,7 +14,7 @@ import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 import uz.jl.vo.question.QuestionCreateVO;
 
-import java.util.Arrays;
+
 import java.util.List;
 
 /**
@@ -36,13 +36,26 @@ public class AdminUI {
         BaseUtils.println("Question update -> 5");
         BaseUtils.println("Question delete -> 6");
         BaseUtils.println("Set role to User -> 7");
+        BaseUtils.println("Quit -> q");
         String choice = BaseUtils.readText("choice ? ");
         switch (choice) {
             case "1" -> showStudentList();
             case "2" -> showTeacherList();
             case "4" -> questionCreate();
+            case "5" -> questionDelete();
+
+            case "q" -> {
+                BaseUtils.println("Bye");
+                System.exit(0);
+            }
         }
         main(args);
+    }
+
+    private static void questionDelete() {
+        Long questionId = Long.valueOf(BaseUtils.readText("Enter question id ? "));
+        questionService.delete(questionId);
+
     }
 
     private static void showStudentList() {
