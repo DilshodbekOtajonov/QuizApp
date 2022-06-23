@@ -17,7 +17,6 @@ public class ApplicationContextHolder {
             case "BaseUtils" -> (T) BaseUtils.getInstance();
             case "AuthUserService" -> (T) AuthUserService.getInstance();
             case "AuthUserValidator" -> (T) AuthUserValidator.getInstance();
-            case "StudentService" -> (T) StudentService.getInstance();
             case "QuestionDAO" -> (T) QuestionDAO.getInstance();
             case "QuestionService" -> (T) QuestionService.getInstance();
             case "SubjectDAO" -> (T) SubjectDAO.getInstance();
