@@ -10,6 +10,7 @@ import uz.jl.service.QuestionService;
 import uz.jl.service.auth.AuthUserService;
 import uz.jl.vo.answer.AnswerCreateVO;
 import uz.jl.vo.auth.AuthUserVO;
+import uz.jl.vo.auth.Session;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 import uz.jl.vo.question.QuestionCreateVO;
@@ -17,6 +18,7 @@ import uz.jl.vo.question.QuestionVO;
 
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -28,31 +30,52 @@ public class AdminUI {
     static AuthUserService authUserService = ApplicationContextHolder.getBean(AuthUserService.class);
     static QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
 
-    public static void main(String[] args) {
-        System.out.println("=================Admin page==================");
-        BaseUtils.println("Show Student List -> 1");
-        BaseUtils.println("Show Teacher List -> 2");
-        BaseUtils.println("Show Question List -> 3");
-        BaseUtils.println("Question create -> 4");
-        BaseUtils.println("Question update -> 5");
-        BaseUtils.println("Question delete -> 6");
-        BaseUtils.println("Set role to User -> 7");
-        BaseUtils.println("Quit -> q");
-        String choice = BaseUtils.readText("choice ? ");
-        switch (choice) {
-            case "1" -> showStudentList();
-            case "2" -> showTeacherList();
-            case "3" -> showQuestionList();
-            case "4" -> questionCreate();
-            case "5" -> questionDelete();
-            case "7" -> setRoleToUser();
+    static StudentUI studentUI = new StudentUI();
 
-            case "q" -> {
-                BaseUtils.println("Bye");
-                System.exit(0);
+    public static void main(String[] args) {
+
+        if (Objects.nonNull(Session.sessionUser)) {
+
+            System.out.println("=================Admin page==================");
+            BaseUtils.println("Show Student List -> 1");
+            BaseUtils.println("Show Teacher List -> 2");
+            BaseUtils.println("Show Question List -> 3");
+            BaseUtils.println("Question create    -> 4");
+            BaseUtils.println("Question update    -> 5");
+            BaseUtils.println("Question delete    -> 6");
+            BaseUtils.println("Set role to User   -> 7");
+            BaseUtils.println("Changes            -> 8");
+            BaseUtils.println("Quit -> q");
+            String choice = BaseUtils.readText("choice ? ");
+            switch (choice) {
+                case "1" -> showStudentList();
+                case "2" -> showTeacherList();
+                case "3" -> showQuestionList();
+                case "4" -> questionCreate();
+                case "5" -> questionDelete();
+                case "7" -> setRoleToUser();
+                case "8" -> changes();
+
+                case "q" -> {
+                    BaseUtils.println("Bye");
+                    System.exit(0);
+                }
             }
+            main(args);
         }
-        main(args);
+    }
+
+    private static void changes() {
+
+        BaseUtils.println("Change your username -> 1");
+        BaseUtils.println("Change your password -> 2");
+        String option = BaseUtils.readText("Choose option: ");
+
+        switch (option){
+            case "1"-> studentUI.changeUserName();
+            case "2"-> studentUI.changePassword();
+        }
+
     }
 
     private static void setRoleToUser() {

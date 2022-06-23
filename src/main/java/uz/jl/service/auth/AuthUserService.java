@@ -164,4 +164,19 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         dao.update(authUser);
 
     }
+
+    public void changeUsername(String newUsername) {
+        AuthUser authUser = dao.findById(Session.sessionUser.getId());
+        authUser.setUsername(newUsername);
+        dao.update(authUser);
+
+    }
+
+    public void changePassword(String newPassword) {
+
+        AuthUser authUser = dao.findById(Session.sessionUser.getId());
+        String encode = utils.encode(newPassword);
+        authUser.setPassword(encode);
+        dao.update(authUser);
+    }
 }

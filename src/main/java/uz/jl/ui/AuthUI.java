@@ -14,6 +14,8 @@ import uz.jl.vo.http.Response;
 
 import java.util.Objects;
 
+
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthUI {
     private static final AuthUI authUI = new AuthUI();
@@ -64,6 +66,8 @@ public class AuthUI {
                 BaseUtils.readText("password ? ")
         );
         print_response(response);
+
+
 
     }
 

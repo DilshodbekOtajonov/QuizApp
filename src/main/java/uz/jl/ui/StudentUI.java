@@ -4,6 +4,7 @@ import uz.jl.BaseUtils;
 import uz.jl.configs.ApplicationContextHolder;
 import uz.jl.enums.QuestionStatus;
 import uz.jl.service.SubjectService;
+import uz.jl.service.auth.AuthUserService;
 import uz.jl.vo.auth.Session;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
@@ -21,9 +22,10 @@ public class StudentUI {
 
     private static final StudentUI studentUI = new StudentUI();
     private SubjectService subjectService = ApplicationContextHolder.getBean(SubjectService.class);
+    private AuthUserService authUserService = ApplicationContextHolder.getBean(AuthUserService.class);
 
     public static void main(String[] args) {
-        if (Objects.isNull(Session.sessionUser)) {
+        if (Objects.nonNull(Session.sessionUser)) {
             System.out.println("=================User Page=================");
             BaseUtils.println("Do test -> 1");
             BaseUtils.println("Show history ->2");
@@ -50,6 +52,30 @@ public class StudentUI {
     private void updateAuthInfo() {
         // TODO: 6/23/22 ask change password
         // TODO: 6/23/22 ask change username
+
+       BaseUtils.println("1.Change username");
+       BaseUtils.println("1.Change password");
+        String option = BaseUtils.readText("Choose option: ");
+        switch (option){
+            case "1"->changeUserName();
+            case "2"->changePassword();
+            default -> BaseUtils.println("Wrong option");
+        }
+
+    }
+
+    public void changePassword() {
+
+        String newPassword = BaseUtils.readText("Insert new password: ");
+
+        authUserService.changePassword(newPassword);
+    }
+
+    public void changeUserName() {
+        String newUsername = BaseUtils.readText("Insert new username: ");
+
+
+        authUserService.changeUsername(newUsername);
 
     }
 
