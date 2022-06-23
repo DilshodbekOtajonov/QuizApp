@@ -45,6 +45,7 @@ public class AuthUI {
             switch (Session.sessionUser.getRole()) {
                 case STUDENT -> StudentUI.main(args);
                 case ADMIN -> AdminUI.main(args);
+                case TEACHER -> TeacherUI.main(args);
             }
         }
 
