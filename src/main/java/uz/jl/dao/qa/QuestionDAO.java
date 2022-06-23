@@ -35,23 +35,11 @@ public class QuestionDAO extends GenericDAO<QuestionEntity, Long> {
         Session session = getSession();
         session.beginTransaction();
         Query<SubjectEntity> query = session
-                .createQuery("select t from SubjectEntity t where t.title=:title", SubjectEntity.class);
+                .createQuery("select t from SubjectEntity t where lower(t.title) =lower(:title)", SubjectEntity.class);
         query.setParameter("title", title);
         Optional<SubjectEntity> result = Optional.ofNullable(query.getSingleResultOrNull());
         session.close();
         return result;
-    }
-
-    public Optional<List<QuestionEntity>> question(Long id, String level) {
-        Session session = getSession();
-        session.beginTransaction();
-        Query<QuestionEntity> query = session
-                .createQuery("select t from QuestionEntity t where t.subject=:id and t.status=:level", QuestionEntity.class);
-        query.setParameter("subject", id);
-        query.setParameter("status", level);
-        Optional<List<QuestionEntity>> resultList = Optional.ofNullable(query.getResultList());
-        session.close();
-        return resultList;
     }
 
     public List<QuestionEntity> findAll(Long id) {

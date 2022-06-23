@@ -69,6 +69,7 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
         }
         SubjectEntity subjectEntity = _subject.get();
         Long id = subjectEntity.getId();
+
         List<QuestionEntity> resultList;
         if (Objects.isNull(level))
             resultList = dao.findAll(id);

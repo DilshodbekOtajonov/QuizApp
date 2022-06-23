@@ -12,7 +12,6 @@ import uz.jl.service.auth.AuthUserService;
 import uz.jl.vo.auth.AuthUserVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
-import uz.jl.vo.question.QuestionVO;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class AdminUI {
 
 
     static StudentService studentService = ApplicationContextHolder.getBean(StudentService.class);
-    static AuthUserService authUserService=ApplicationContextHolder.getBean(AuthUserService.class);
+    static AuthUserService authUserService = ApplicationContextHolder.getBean(AuthUserService.class);
     static QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
 
 
@@ -60,13 +59,13 @@ public class AdminUI {
 
     private static void listSubject() {
         String subject = BaseUtils.readText("Enter subject name: ");
-        Response<DataVO<List<QuestionEntity>>> responseList=questionService.getAll(subject,null);
+        Response<DataVO<List<QuestionEntity>>> responseList = questionService.getAll(subject, null);
 
         if (responseList.getStatus().equals(200)) {
             for (QuestionEntity questionVO : responseList.getData().getBody()) {
                 BaseUtils.println(questionVO);
             }
-        }else print_response(responseList);
+        } else print_response(responseList);
     }
 
     private static void selectionByParameter() {
@@ -77,10 +76,11 @@ public class AdminUI {
         switch (choice) {
             case "1" -> level = QuestionStatus.EASY;
             case "2" -> level = QuestionStatus.MEDIUM;
-            case "3" -> level = QuestionStatus.HARD;}
+            case "3" -> level = QuestionStatus.HARD;
+        }
 
-       Response<DataVO<List<QuestionEntity>>> responseList=questionService.getAll(name,level);
-        if (responseList.getStatus().equals(200)){
+        Response<DataVO<List<QuestionEntity>>> responseList = questionService.getAll(name, level);
+        if (responseList.getStatus().equals(200)) {
             for (QuestionEntity questionEntity : responseList.getData().getBody()) {
                 BaseUtils.println(questionEntity);
             }
@@ -93,12 +93,12 @@ public class AdminUI {
     }
 
     private static void showStudentList() {
-      Response<DataVO<List<AuthUserVO>>> responseList=authUserService.getAll(AuthRole.STUDENT);
+        Response<DataVO<List<AuthUserVO>>> responseList = authUserService.getAll(AuthRole.STUDENT);
         if (responseList.getStatus().equals(200)) {
             for (AuthUserVO authUserVO : responseList.getData().getBody()) {
                 BaseUtils.println(authUserVO);
             }
-        }else print_response(responseList);
+        } else print_response(responseList);
     }
 
     public static void print_response(Response response) {
