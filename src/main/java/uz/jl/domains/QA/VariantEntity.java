@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import uz.jl.domains.Auditable;
-import uz.jl.domains.QA.QuestionEntity;
 import uz.jl.domains.auth.AuthUser;
 import uz.jl.enums.QuestionStatus;
 
@@ -23,13 +22,13 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "variants", schema = "test")
 public class VariantEntity extends Auditable {
-    @OneToOne(targetEntity = AuthUser.class, cascade = CascadeType.MERGE)
+    @OneToOne(targetEntity = AuthUser.class)
     @JoinColumn(name = "user_id")
     private AuthUser user;
     @Enumerated(EnumType.STRING)
     private QuestionStatus status;
 
-    @ManyToMany(targetEntity = QuestionEntity.class,cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = QuestionEntity.class, cascade = CascadeType.ALL)
     @JoinTable(name = "variant_question",
             joinColumns = @JoinColumn(name = "variant_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id"),

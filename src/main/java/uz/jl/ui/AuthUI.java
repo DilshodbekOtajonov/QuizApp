@@ -38,7 +38,6 @@ public class AuthUI {
                     System.exit(0);
                 }
                 default -> BaseUtils.println("Invalid choice");
-
             }
             main(args);
         } else {
@@ -48,9 +47,7 @@ public class AuthUI {
                 case TEACHER -> TeacherUI.main(args);
             }
         }
-
     }
-
     private void register() {
         AuthUserCreateVO vo = AuthUserCreateVO.builder()
                 .username(BaseUtils.readText("username ? "))

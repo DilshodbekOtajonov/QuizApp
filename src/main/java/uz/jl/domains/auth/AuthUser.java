@@ -27,7 +27,6 @@ AuthUser extends Auditable {
     @Column(nullable = false, unique = true)
     private String email;
 
-
     @Enumerated(EnumType.STRING)
     private AuthRole role;
 

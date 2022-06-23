@@ -46,7 +46,11 @@ public class GenericDAO<T, ID> implements BaseDAO {
     }
 
     public void update(T entity) {
-        save(entity);
+        Session session = getSession();
+        session.beginTransaction();
+        session.merge(entity);
+        session.getTransaction().commit();
+        session.close();
 
     }
 

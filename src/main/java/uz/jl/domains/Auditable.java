@@ -32,7 +32,7 @@ public class Auditable implements BaseDomain {
 
     private Long updatedBy;
 
-    @Column(columnDefinition = "smallint default 0")
+    @Column(columnDefinition = "smallint default 0",nullable = false)
     @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     private Boolean deleted;
 

@@ -1,12 +1,12 @@
 package uz.jl.service.auth;
 
-import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import uz.jl.configs.ApplicationContextHolder;
 import uz.jl.dao.AbstractDAO;
 import uz.jl.dao.auth.AuthUserDAO;
 import uz.jl.domains.auth.AuthUser;
 import uz.jl.enums.AuthRole;
+import uz.jl.exceptions.ValidationException;
 import uz.jl.service.GenericCRUDService;
 import uz.jl.utils.BaseUtils;
 import uz.jl.utils.validators.authUser.AuthUserValidator;
@@ -18,7 +18,6 @@ import uz.jl.vo.http.AppErrorVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,20 +39,24 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
     }
 
     @Override
-    @Transactional
     public Response<DataVO<Long>> create(@NonNull AuthUserCreateVO vo) {
+        try {
+            validator.validOnCreate(vo);
 
-        validator.validOnCreate(vo);
-
-        AuthUser authUser = AuthUser
-                .childBuilder()
-                .username(vo.getUsername())
-                .password(utils.encode(vo.getPassword()))
-                .email(vo.getEmail())
-                .build();
-        System.out.println(authUser.getRole().name());
-        dao.save(authUser);
-        return new Response<>(new DataVO<>(authUser.getId()), 200);
+            AuthUser authUser = AuthUser
+                    .childBuilder()
+                    .username(vo.getUsername())
+                    .password(utils.encode(vo.getPassword()))
+                    .email(vo.getEmail())
+                    .build();
+            System.out.println(authUser.getRole().name());
+            dao.save(authUser);
+            return new Response<>(new DataVO<>(authUser.getId()), 200);
+        } catch (ValidationException e) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage(e.getMessage())
+                    .build()), 400);
+        }
 
     }
 
@@ -69,7 +72,23 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
 
     @Override
     public Response<DataVO<AuthUserVO>> get(@NonNull Long id) {
-        return null;
+        try {
+            validator.validateKey(id);
+            AuthUser authUser = dao.findById(id);
+            AuthUserVO authUserVO = AuthUserVO.childBuilder()
+                    .id(id)
+                    .role(authUser.getRole())
+                    .username(authUser.getUsername())
+                    .email(authUser.getEmail())
+                    .createdAt(authUser.getCreatedAt().toLocalDateTime())
+                    .build();
+
+            return new Response<>(new DataVO<>(authUserVO));
+        } catch (ValidationException e) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage(e.getMessage())
+                    .build()));
+        }
     }
 
     @Override

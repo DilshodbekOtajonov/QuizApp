@@ -35,7 +35,9 @@ public class AuthUserDAO extends GenericDAO<AuthUser, Long> {
         session.close();
         return result;
 
-    } public Optional<AuthUser> findByEmail(String email) {
+    }
+
+    public Optional<AuthUser> findByEmail(String email) {
         Session session = getSession();
         session.beginTransaction();
         Query<AuthUser> query = session
@@ -46,24 +48,14 @@ public class AuthUserDAO extends GenericDAO<AuthUser, Long> {
         session.close();
         return result;
     }
+
     public List<AuthUser> findAll(AuthRole role) {
         Session session = getSession();
         session.beginTransaction();
-        List<AuthUser> resultList = session.createQuery("select t from AuthUser t where t.role=:role", AuthUser.class).setParameter("role",role).getResultList();
+        List<AuthUser> resultList = session.createQuery("select t from AuthUser t where t.role=:role", AuthUser.class).setParameter("role", role).getResultList();
 
         session.close();
         return resultList;
     }
 
-
-    public void update(AuthUser entity) {
-        Session session = getSession();
-        session.beginTransaction();
-
-        Query nativeQuery = session.createQuery("update AuthUser  set role=:role where id=:id");
-        nativeQuery.setParameter("role",entity.getRole().toString());
-        nativeQuery.setParameter("id",entity.getId());
-        session.getTransaction().commit();
-        session.close();
-    }
 }

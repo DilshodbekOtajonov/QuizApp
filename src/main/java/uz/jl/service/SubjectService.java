@@ -14,6 +14,7 @@ import uz.jl.vo.subject.SubjectCreateVO;
 import uz.jl.vo.subject.SubjectUpdateVO;
 import uz.jl.vo.subject.SubjectVO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -83,6 +84,21 @@ public class SubjectService extends AbstractDAO<SubjectDAO> implements GenericCR
 
     @Override
     public Response<DataVO<List<SubjectVO>>> getAll() {
-        return null;
+        List<SubjectEntity> all = dao.findAll();
+        if (Objects.isNull(all))
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("No subjects found")
+                    .build()));
+
+        List<SubjectVO> result = new ArrayList<>();
+        for (SubjectEntity subjectEntity : all) {
+            SubjectVO subjectVO = SubjectVO.childBuilder()
+                    .title(subjectEntity.getTitle())
+                    .id(subjectEntity.getId())
+                    .build();
+            result.add(subjectVO);
+        }
+
+        return new Response<>(new DataVO<>(result));
     }
 }

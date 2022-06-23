@@ -26,11 +26,11 @@ public class QuestionEntity extends Auditable {
     private String body;
     @Enumerated(EnumType.STRING)
     private QuestionStatus status;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     private List<AnswerEntity> answers;
 
-    @OneToOne(cascade = CascadeType.MERGE, targetEntity = SubjectEntity.class, fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = SubjectEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "subject_id")
     private SubjectEntity subject;
 

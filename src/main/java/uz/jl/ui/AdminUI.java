@@ -45,6 +45,7 @@ public class AdminUI {
             case "3" -> showQuestionList();
             case "4" -> questionCreate();
             case "5" -> questionDelete();
+            case "7" -> setRoleToUser();
 
             case "q" -> {
                 BaseUtils.println("Bye");
@@ -52,6 +53,27 @@ public class AdminUI {
             }
         }
         main(args);
+    }
+
+    private static void setRoleToUser() {
+        Long userId = Long.valueOf(BaseUtils.readText("Insert id: "));
+
+
+        BaseUtils.println("1.ADMIN");
+        BaseUtils.println("2.TEACHER");
+        BaseUtils.println("3.STUDENT");
+
+        AuthRole role = null;
+
+        String option = BaseUtils.readText("Choose role: ");
+
+        switch (option) {
+            case "1" -> role = AuthRole.ADMIN;
+            case "2" -> role = AuthRole.TEACHER;
+            default -> role = AuthRole.STUDENT;
+        }
+
+        authUserService.setRole(userId, role);
     }
 
     private static void showQuestionList() {
