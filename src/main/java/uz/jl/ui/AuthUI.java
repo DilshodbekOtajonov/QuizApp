@@ -21,7 +21,6 @@ public class AuthUI {
 
     public static void main(String[] args) {
 
-
         if (Objects.isNull(Session.sessionUser)) {
             BaseUtils.println("============welcome to Quiz App===========", Colors.BLUE);
             BaseUtils.println("Login -> 1");
@@ -39,15 +38,20 @@ public class AuthUI {
                 }
                 default -> BaseUtils.println("Invalid choice");
             }
-            main(args);
+
+
         } else {
             switch (Session.sessionUser.getRole()) {
                 case STUDENT -> StudentUI.main(args);
                 case ADMIN -> AdminUI.main(args);
                 case TEACHER -> TeacherUI.main(args);
+
             }
         }
+        main(args);
+
     }
+
     private void register() {
         AuthUserCreateVO vo = AuthUserCreateVO.builder()
                 .username(BaseUtils.readText("username ? "))

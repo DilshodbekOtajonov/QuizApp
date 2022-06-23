@@ -10,10 +10,7 @@ import uz.jl.exceptions.ValidationException;
 import uz.jl.service.GenericCRUDService;
 import uz.jl.utils.BaseUtils;
 import uz.jl.utils.validators.authUser.AuthUserValidator;
-import uz.jl.vo.auth.AuthUserCreateVO;
-import uz.jl.vo.auth.AuthUserUpdateVO;
-import uz.jl.vo.auth.AuthUserVO;
-import uz.jl.vo.auth.Session;
+import uz.jl.vo.auth.*;
 import uz.jl.vo.http.AppErrorVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
@@ -104,7 +101,6 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
                     .friendlyMessage("No user find with role '%s'".formatted(role.name()))
                     .build()));
         }
-
         for (AuthUser authUser : resultList) {
             AuthUserVO authUserVO = AuthUserVO.childBuilder()
                     .id(authUser.getId())
@@ -117,15 +113,7 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
 
             response.add(authUserVO);
         }
-
         return new Response<>(new DataVO<>(response), 200);
-    }
-
-    public static AuthUserService getInstance() {
-        if (instance == null) {
-            instance = new AuthUserService();
-        }
-        return instance;
     }
 
     public Response<DataVO<AuthUserVO>> login(String username, String password) {
@@ -156,12 +144,52 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         Optional<AuthUser> findById = Optional.ofNullable(dao.findById(user_id));
         if (findById.isEmpty())
             throw new RuntimeException("user not found");
-
         AuthUser authUser = findById.get();
 
         authUser.setRole(option);
 
         dao.update(authUser);
 
+    }
+
+    public Response<DataVO<Void>> changeUsername(String newUsername) {
+        Optional<AuthUser> usernameCheck = dao.findByUserName(newUsername);
+        if (usernameCheck.isPresent())
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("username '%s' already taken".formatted(newUsername))
+                    .build()), 400);
+        AuthUser authUser = dao.findById(Session.sessionUser.getId());
+        authUser.setUsername(newUsername);
+        dao.update(authUser);
+        return new Response<>(new DataVO<>(null), 200);
+    }
+
+    public Response<DataVO<Void>> changePassword(AuthUserPasswordResetVO resetVO) {
+        AuthUser authUser = dao.findById(Session.sessionUser.getId());
+
+        boolean matchPassword = utils.matchPassword(resetVO.getOldPassword(), authUser.getPassword());
+        if (!matchPassword)
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Old password incorrect")
+                    .build()), 404);
+
+        if (!resetVO.getNewPassword().equals(resetVO.getConfirmNewPassword()))
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("new password not confirmed")
+                    .build()), 400);
+
+        String encode = utils.encode(resetVO.getNewPassword());
+        authUser.setPassword(encode);
+        dao.update(authUser);
+        return new Response<>(new DataVO<>(null), 200);
+    }
+
+    ;
+
+    public static AuthUserService getInstance() {
+        if (instance == null) {
+            instance = new AuthUserService();
+        }
+        return instance;
     }
 }

@@ -10,6 +10,7 @@ import uz.jl.service.QuestionService;
 import uz.jl.service.auth.AuthUserService;
 import uz.jl.vo.answer.AnswerCreateVO;
 import uz.jl.vo.auth.AuthUserVO;
+import uz.jl.vo.auth.Session;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 import uz.jl.vo.question.QuestionCreateVO;
@@ -17,6 +18,7 @@ import uz.jl.vo.question.QuestionVO;
 
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -29,35 +31,50 @@ public class AdminUI {
     static QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
 
     public static void main(String[] args) {
-        System.out.println("=================Admin page==================");
-        BaseUtils.println("Show Student List -> 1");
-        BaseUtils.println("Show Teacher List -> 2");
-        BaseUtils.println("Show Question List -> 3");
-        BaseUtils.println("Question create -> 4");
-        BaseUtils.println("Question update -> 5");
-        BaseUtils.println("Question delete -> 6");
-        BaseUtils.println("Set role to User -> 7");
-        BaseUtils.println("Quit -> q");
-        String choice = BaseUtils.readText("choice ? ");
-        switch (choice) {
-            case "1" -> showStudentList();
-            case "2" -> showTeacherList();
-            case "3" -> showQuestionList();
-            case "4" -> questionCreate();
-            case "5" -> questionDelete();
-            case "7" -> setRoleToUser();
 
-            case "q" -> {
-                BaseUtils.println("Bye");
-                System.exit(0);
+        if (Objects.nonNull(Session.sessionUser)) {
+            System.out.println("=================Admin page==================");
+            BaseUtils.println("Show Student List -> 1");
+            BaseUtils.println("Show Teacher List -> 2");
+            BaseUtils.println("Show Question List -> 3");
+            BaseUtils.println("Question create -> 4");
+            BaseUtils.println("Question update -> 5");
+            BaseUtils.println("Question delete -> 6");
+            BaseUtils.println("Set role to User -> 7");
+            BaseUtils.println("Log out-> l");
+            BaseUtils.println("Quit -> q");
+            String choice = BaseUtils.readText("choice ? ");
+            switch (choice) {
+                case "1" -> showStudentList();
+                case "2" -> showTeacherList();
+                case "3" -> showQuestionList();
+                case "4" -> questionCreate();
+                case "5" -> questionDelete();
+                case "7" -> setRoleToUser();
+                case "l" -> Session.setSessionUser(null);
+                case "q" -> {
+                    BaseUtils.println("Bye");
+                    System.exit(0);
+                }
             }
+            main(args);
         }
-        main(args);
     }
 
+    private static void changes() {
+
+        BaseUtils.println("Change your username -> 1");
+        BaseUtils.println("Change your password -> 2");
+        String option = BaseUtils.readText("Choose option: ");
+
+        switch (option){
+            case "1"-> StudentUI.changeUserName();
+            case "2"-> StudentUI.changePassword();
+        }
+
+    }
     private static void setRoleToUser() {
         Long userId = Long.valueOf(BaseUtils.readText("Insert id: "));
-
 
         BaseUtils.println("1.ADMIN");
         BaseUtils.println("2.TEACHER");
@@ -101,7 +118,7 @@ public class AdminUI {
 
     private static void parameterizeWithSubject() {
         String subject = BaseUtils.readText("Enter subject name: ");
-        Response<DataVO<List<QuestionVO>>> responseList = questionService.getAll(subject, null);
+        Response<DataVO<List<QuestionVO>>> responseList = questionService.getAll(subject, null,null);
 
         if (responseList.getStatus().equals(200)) {
             for (QuestionVO questionVO : responseList.getData().getBody()) {
@@ -121,7 +138,7 @@ public class AdminUI {
             case "3" -> level = QuestionStatus.HARD;
         }
 
-        Response<DataVO<List<QuestionVO>>> responseList = questionService.getAll(name, level);
+        Response<DataVO<List<QuestionVO>>> responseList = questionService.getAll(name, level,null);
         if (responseList.getStatus().equals(200)) {
             for (QuestionVO questionVO : responseList.getData().getBody()) {
                 BaseUtils.println(questionVO);

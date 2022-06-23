@@ -37,7 +37,17 @@ public class QuestionDAO extends GenericDAO<QuestionEntity, Long> {
         return entityList;
     }
 
-    public List<QuestionEntity> findAllSubjectIdAndLevel(Long subjectId, QuestionStatus status) {
+    public List<QuestionEntity> findAllBySubjectIdAndLevel(Long subjectId, QuestionStatus status) {
+        Session session = getSession();
+        session.beginTransaction();
+        List<QuestionEntity> entityList = session.createQuery("select t from QuestionEntity t where t.status=:status  and t.subject.id=:id", QuestionEntity.class)
+                .setParameter("id", subjectId)
+                .setParameter("status", status).getResultList();
+        session.close();
+        return entityList;
+    }
+
+    public List<QuestionEntity> findAllBySubjectIdAndLevel(Long subjectId, QuestionStatus status, Integer numberOfQuestion) {
         Session session = getSession();
         session.beginTransaction();
         List<QuestionEntity> entityList = session.createQuery("select t from QuestionEntity t where t.status=:status  and t.subject.id=:id", QuestionEntity.class)
