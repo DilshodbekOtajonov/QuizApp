@@ -1,5 +1,6 @@
 package uz.jl.vo.subject;
 
+import lombok.Builder;
 import uz.jl.vo.GenericVO;
 
 /**
@@ -8,7 +9,11 @@ import uz.jl.vo.GenericVO;
  * QuizApp/IntelliJ IDEA
  */
 public class SubjectUpdateVO extends GenericVO {
-    public SubjectUpdateVO(Long id) {
+    private String title;
+
+    @Builder(builderMethodName = "childBuilder")
+    public SubjectUpdateVO(Long id, String title) {
         super(id);
+        this.title = title;
     }
 }

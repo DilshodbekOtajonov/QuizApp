@@ -7,6 +7,8 @@ import uz.jl.dao.AbstractDAO;
 import uz.jl.dao.qa.QuestionDAO;
 import uz.jl.domains.QA.AnswerEntity;
 import uz.jl.domains.QA.QuestionEntity;
+import uz.jl.domains.subject.SubjectEntity;
+import uz.jl.enums.QuestionStatus;
 import uz.jl.utils.BaseUtils;
 
 import uz.jl.vo.answer.AnswerCreateVO;
@@ -18,10 +20,12 @@ import uz.jl.vo.question.QuestionUpdateVO;
 import uz.jl.vo.question.QuestionVO;
 import uz.jl.vo.subject.SubjectVO;
 
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+;
 
 public class QuestionService extends AbstractDAO<QuestionDAO> implements GenericCRUDService<
         QuestionVO,
@@ -30,6 +34,8 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
         Long> {
 
     private static QuestionService instance;
+
+    private static final SubjectService subjectService = ApplicationContextHolder.getBean(SubjectService.class);
 
     public QuestionService() {
 
@@ -114,5 +120,45 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
 
         return new Response<>(new DataVO<>(response));
     }
+
+    public Response<DataVO<List<QuestionVO>>> getAll(String name, QuestionStatus level) {
+
+        Response<DataVO<SubjectVO>> subjectResponse = subjectService.get(name);
+        if (subjectResponse.getStatus() != 200) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Subject not found")
+                    .build()),400);
+        }
+
+        SubjectVO subjectVO = subjectResponse.getData().getBody();
+
+
+
+        Long subjectId = subjectVO.getId();
+        List<QuestionEntity> resultList;
+        if (Objects.isNull(level)) {
+            resultList = dao.findAllBySubjectId(subjectId);
+        }
+        else {
+            resultList = dao.findAllSubjectIdAndLevel(subjectId, level);
+        }
+
+        if (resultList.isEmpty()) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("No result found").build()),500);
+        }
+
+        List<QuestionVO> response = new ArrayList<>();
+        for (QuestionEntity question : resultList) {
+            QuestionVO questionEntity = QuestionVO.childBuilder()
+                    .id(question.getId())
+                    .body(question.getBody())
+                    .status(question.getStatus())
+                    .answers(question.getAnswers())
+                    .subject(subjectVO).build();
+
+            response.add(questionEntity);
+        }
+        return new Response<>(new DataVO<>(response), 200);
+    }
 }
-;

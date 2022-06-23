@@ -1,9 +1,10 @@
-package uz.jl.domains;
+package uz.jl.domains.QA;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import uz.jl.domains.Auditable;
 import uz.jl.domains.QA.QuestionEntity;
 import uz.jl.domains.auth.AuthUser;
 import uz.jl.enums.QuestionStatus;

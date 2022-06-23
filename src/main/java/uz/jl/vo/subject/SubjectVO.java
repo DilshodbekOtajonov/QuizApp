@@ -12,6 +12,7 @@ import uz.jl.vo.GenericVO;
 
 @Getter
 @Setter
+@ToString
 public class SubjectVO extends GenericVO {
     private String title;
 

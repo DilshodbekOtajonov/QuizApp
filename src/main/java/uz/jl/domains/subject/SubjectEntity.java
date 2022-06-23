@@ -1,10 +1,11 @@
-package uz.jl.domains;
+package uz.jl.domains.subject;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import uz.jl.domains.Auditable;
 
 import java.sql.Timestamp;
 

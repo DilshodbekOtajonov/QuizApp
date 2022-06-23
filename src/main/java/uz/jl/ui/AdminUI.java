@@ -67,10 +67,49 @@ public class AdminUI {
     }
 
     private static void ShowParameterizedQuestionList() {
+        BaseUtils.println("Parameterize with subject -> 1");
+        BaseUtils.println("Parameterize with subject and level -> 2");
+        BaseUtils.println("default go back");
+        String choice = BaseUtils.readText("choice ? ");
+        switch (choice) {
+            case "1" -> parameterizeWithSubject();
+            case "2" -> parameterizeWithSubjectAndLevel();
+        }
+    }
+
+    private static void parameterizeWithSubject() {
+        String subject = BaseUtils.readText("Enter subject name: ");
+        Response<DataVO<List<QuestionVO>>> responseList = questionService.getAll(subject, null);
+
+        if (responseList.getStatus().equals(200)) {
+            for (QuestionVO questionVO : responseList.getData().getBody()) {
+                BaseUtils.println(questionVO);
+            }
+        } else print_response(responseList);
+    }
+
+    private static void parameterizeWithSubjectAndLevel() {
+        String name = BaseUtils.readText("Enter subject name: ");
+        BaseUtils.println("1.EASY 2.MEDIUM 3.HARD");
+        String choice = BaseUtils.readText("choice ? ");
+        QuestionStatus level = null;
+        switch (choice) {
+            case "1" -> level = QuestionStatus.EASY;
+            case "2" -> level = QuestionStatus.MEDIUM;
+            case "3" -> level = QuestionStatus.HARD;
+        }
+
+        Response<DataVO<List<QuestionVO>>> responseList = questionService.getAll(name, level);
+        if (responseList.getStatus().equals(200)) {
+            for (QuestionVO questionVO : responseList.getData().getBody()) {
+                BaseUtils.println(questionVO);
+            }
+        } else print_response(responseList);
     }
 
     private static void showAllQuestionList() {
         Response<DataVO<List<QuestionVO>>> all = questionService.getAll();
+
         for (QuestionVO questionVO : all.getData().getBody()) {
             BaseUtils.println(questionVO);
         }
@@ -113,6 +152,7 @@ public class AdminUI {
             System.out.println(i + " " + value);
 
         }
+
         String choice = BaseUtils.readText("choice ? ");
         switch (choice) {
             case "1" -> vo.setStatus(QuestionStatus.EASY);

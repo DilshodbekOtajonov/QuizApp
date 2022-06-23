@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uz.jl.domains.Auditable;
-import uz.jl.domains.SubjectEntity;
+import uz.jl.domains.subject.SubjectEntity;
 import uz.jl.enums.QuestionStatus;
 
 import java.sql.Timestamp;
