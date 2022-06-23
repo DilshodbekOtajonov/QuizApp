@@ -25,10 +25,19 @@ public class SubjectService extends AbstractDAO<SubjectDAO> implements GenericCR
         SubjectUpdateVO,
         Long> {
 
+    private static SubjectService instance;
+
     private SubjectService() {
         super(
                 ApplicationContextHolder.getBean(SubjectDAO.class),
                 ApplicationContextHolder.getBean(BaseUtils.class));
+    }
+
+    public static SubjectService getInstance() {
+        if (instance == null) {
+            instance = new SubjectService();
+        }
+        return instance;
     }
 
 

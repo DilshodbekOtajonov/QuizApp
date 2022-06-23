@@ -3,6 +3,7 @@ package uz.jl.domains;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
@@ -16,6 +17,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(schema = "subject",name = "subjects")
 @NoArgsConstructor
+@Getter
 public class SubjectEntity extends Auditable {
     private String title;
 

@@ -13,6 +13,7 @@ import uz.jl.vo.auth.AuthUserVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 import uz.jl.vo.question.QuestionCreateVO;
+import uz.jl.vo.question.QuestionVO;
 
 
 import java.util.List;
@@ -41,6 +42,7 @@ public class AdminUI {
         switch (choice) {
             case "1" -> showStudentList();
             case "2" -> showTeacherList();
+            case "3" -> showQuestionList();
             case "4" -> questionCreate();
             case "5" -> questionDelete();
 
@@ -50,6 +52,28 @@ public class AdminUI {
             }
         }
         main(args);
+    }
+
+    private static void showQuestionList() {
+        BaseUtils.println("Show All question List -> 1");
+        BaseUtils.println("Show parameterized question List -> 2");
+        BaseUtils.println("default go back");
+        String choice = BaseUtils.readText("choice ? ");
+        switch (choice) {
+            case "1" -> showAllQuestionList();
+            case "2" -> ShowParameterizedQuestionList();
+        }
+
+    }
+
+    private static void ShowParameterizedQuestionList() {
+    }
+
+    private static void showAllQuestionList() {
+        Response<DataVO<List<QuestionVO>>> all = questionService.getAll();
+        for (QuestionVO questionVO : all.getData().getBody()) {
+            BaseUtils.println(questionVO);
+        }
     }
 
     private static void questionDelete() {

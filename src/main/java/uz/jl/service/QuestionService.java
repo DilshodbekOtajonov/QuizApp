@@ -16,6 +16,7 @@ import uz.jl.vo.http.Response;
 import uz.jl.vo.question.QuestionCreateVO;
 import uz.jl.vo.question.QuestionUpdateVO;
 import uz.jl.vo.question.QuestionVO;
+import uz.jl.vo.subject.SubjectVO;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -94,7 +95,24 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
 
     @Override
     public Response<DataVO<List<QuestionVO>>> getAll() {
-        return null;
+        List<QuestionEntity> all = dao.findAll();
+        if (all.isEmpty()) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("No question find")
+                    .build()));
+        }
+        List<QuestionVO> response = new ArrayList<>();
+        for (QuestionEntity questionEntity : all) {
+            QuestionVO questionVO = QuestionVO.childBuilder()
+                    .body(questionEntity.getBody())
+                    .answers(questionEntity.getAnswers())
+                    .id(questionEntity.getId())
+                    .status(questionEntity.getStatus())
+                    .build();
+            response.add(questionVO);
+        }
+
+        return new Response<>(new DataVO<>(response));
     }
 }
 ;
