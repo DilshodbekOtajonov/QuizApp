@@ -1,15 +1,15 @@
 package uz.jl.service;
 
-import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import uz.jl.configs.ApplicationContextHolder;
+
 import uz.jl.dao.AbstractDAO;
 import uz.jl.dao.qa.QuestionDAO;
+import uz.jl.domains.QA.AnswerEntity;
 import uz.jl.domains.QA.QuestionEntity;
-import uz.jl.domains.SubjectEntity;
-import uz.jl.enums.QuestionStatus;
 import uz.jl.utils.BaseUtils;
-import uz.jl.utils.validators.question.QuestionValidator;
+
+import uz.jl.vo.answer.AnswerCreateVO;
 import uz.jl.vo.http.AppErrorVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
@@ -17,26 +17,51 @@ import uz.jl.vo.question.QuestionCreateVO;
 import uz.jl.vo.question.QuestionUpdateVO;
 import uz.jl.vo.question.QuestionVO;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
-public class QuestionService extends AbstractDAO<QuestionDAO> implements GenericCRUDService<QuestionVO, QuestionCreateVO, QuestionUpdateVO, Long> {
+public class QuestionService extends AbstractDAO<QuestionDAO> implements GenericCRUDService<
+        QuestionVO,
+        QuestionCreateVO,
+        QuestionUpdateVO,
+        Long> {
+
     private static QuestionService instance;
 
-    private final QuestionValidator questionValidator = ApplicationContextHolder.getBean(QuestionValidator.class);
+    public QuestionService() {
 
-    private QuestionService() {
-        super(
-                ApplicationContextHolder.getBean(QuestionDAO.class),
+        super(ApplicationContextHolder.getBean(QuestionDAO.class),
                 ApplicationContextHolder.getBean(BaseUtils.class));
     }
 
+    public static QuestionService getInstance() {
+        if (instance == null) {
+            instance = new QuestionService();
+        }
+        return instance;
+    }
+
     @Override
-    @Transactional
     public Response<DataVO<Long>> create(@NonNull QuestionCreateVO vo) {
-        return null;
+        List<AnswerEntity> answerList = new ArrayList<>();
+
+        for (AnswerCreateVO answer : vo.getAnswers()) {
+            AnswerEntity build = AnswerEntity.childBuilder()
+                    .body(answer.getBody())
+                    .status(answer.getStatus())
+                    .build();
+            answerList.add(build);
+        }
+        QuestionEntity question = QuestionEntity.childBuilder()
+                .body(vo.getBody())
+                .answers(answerList)
+                .status(vo.getStatus())
+                .build();
+        QuestionEntity save = dao.save(question);
+
+        return new Response<>(new DataVO<>(save.getId()), 200);
     }
 
     @Override
@@ -45,8 +70,21 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
     }
 
     @Override
-    public Response<DataVO<Void>> delete(@NonNull Long aLong) {
-        return null;
+    public Response<DataVO<Void>> delete(@NonNull Long questionId) {
+        QuestionEntity questionEntity = dao.findById(questionId);
+        if (Objects.isNull(questionEntity)) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Question not found by id")
+                    .build()), 404);
+        }
+        try {
+            dao.deleteById(questionId);
+            return new Response<>(new DataVO<>(null));
+        } catch (SQLException e) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Oops something went wrong")
+                    .build()), 500);
+        }
     }
 
     @Override
@@ -58,46 +96,5 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
     public Response<DataVO<List<QuestionVO>>> getAll() {
         return null;
     }
-
-    public Response<DataVO<List<QuestionEntity>>> getAll(String name, QuestionStatus level) {
-        List<QuestionEntity> response = new ArrayList<>();
-
-        Optional<SubjectEntity> _subject = dao.findByName(name);
-        if (_subject.isEmpty()) {
-            return new Response<>(new DataVO<>(AppErrorVO.builder()
-                    .friendlyMessage("No subject with name '%s'".formatted(name)).build()));
-        }
-        SubjectEntity subjectEntity = _subject.get();
-        Long id = subjectEntity.getId();
-
-        List<QuestionEntity> resultList;
-        if (Objects.isNull(level))
-            resultList = dao.findAll(id);
-        else
-            resultList = dao.findAll(id, level);
-
-        if (resultList.isEmpty()) {
-            return new Response<>(new DataVO<>(AppErrorVO.builder()
-                    .friendlyMessage("No").build()));
-        }
-        for (QuestionEntity question : resultList) {
-            QuestionEntity questionEntity = QuestionEntity.childBuilder()
-                    .id(question.getId())
-                    .body(question.getBody())
-                    .status(question.getStatus())
-                    .answers(question.getAnswers())
-                    .subject(question.getSubject()).build();
-            response.add(questionEntity);
-        }
-        return new Response<>(new DataVO<>(response), 200);
-    }
-
-
-
-    public static QuestionService getInstance() {
-        if (instance == null) {
-            instance = new QuestionService();
-        }
-        return instance;
-    }
 }
+;

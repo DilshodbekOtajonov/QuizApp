@@ -3,8 +3,8 @@ package uz.jl.vo.question;
 import lombok.Builder;
 import uz.jl.domains.QA.AnswerEntity;
 import uz.jl.enums.QuestionStatus;
-import uz.jl.enums.Subject;
 import uz.jl.vo.GenericVO;
+import uz.jl.vo.subject.SubjectVO;
 
 import java.util.List;
 
@@ -18,10 +18,10 @@ public class QuestionVO extends GenericVO {
     private String body;
     private QuestionStatus status;
     private List<AnswerEntity> answers;
-    private Subject subject;
+    private SubjectVO subject;
 
     @Builder(builderMethodName = "childBuilder")
-    public QuestionVO(Long id, String body, QuestionStatus status, List<AnswerEntity> answers, Subject subject) {
+public QuestionVO(Long id, String body, QuestionStatus status, List<AnswerEntity> answers, SubjectVO subject) {
         super(id);
         this.body = body;
         this.status = status;
