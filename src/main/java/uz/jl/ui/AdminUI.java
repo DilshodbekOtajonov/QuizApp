@@ -6,6 +6,7 @@ import uz.jl.configs.ApplicationContextHolder;
 import uz.jl.enums.AnswerStatus;
 import uz.jl.enums.AuthRole;
 import uz.jl.enums.QuestionStatus;
+import uz.jl.service.QuestionService;
 import uz.jl.service.auth.AuthUserService;
 import uz.jl.vo.answer.AnswerCreateVO;
 import uz.jl.vo.auth.AuthUserVO;
@@ -13,7 +14,7 @@ import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 import uz.jl.vo.question.QuestionCreateVO;
 
-import java.util.Arrays;
+
 import java.util.List;
 
 /**
@@ -24,22 +25,37 @@ import java.util.List;
 public class AdminUI {
 
     static AuthUserService authUserService = ApplicationContextHolder.getBean(AuthUserService.class);
+    static QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
 
     public static void main(String[] args) {
         System.out.println("=================Admin page==================");
-        BaseUtils.println("Show Student List  -> 1");
-        BaseUtils.println("Show Teacher List  -> 2");
-        BaseUtils.println("Show Question List  -> 3");
+        BaseUtils.println("Show Student List -> 1");
+        BaseUtils.println("Show Teacher List -> 2");
+        BaseUtils.println("Show Question List -> 3");
         BaseUtils.println("Question create -> 4");
-        BaseUtils.println("Question update  -> 5");
-        BaseUtils.println("Question delete  -> 6");
-
+        BaseUtils.println("Question update -> 5");
+        BaseUtils.println("Question delete -> 6");
+        BaseUtils.println("Set role to User -> 7");
+        BaseUtils.println("Quit -> q");
         String choice = BaseUtils.readText("choice ? ");
         switch (choice) {
             case "1" -> showStudentList();
             case "2" -> showTeacherList();
+            case "4" -> questionCreate();
+            case "5" -> questionDelete();
+
+            case "q" -> {
+                BaseUtils.println("Bye");
+                System.exit(0);
+            }
         }
         main(args);
+    }
+
+    private static void questionDelete() {
+        Long questionId = Long.valueOf(BaseUtils.readText("Enter question id ? "));
+        questionService.delete(questionId);
+
     }
 
     private static void showStudentList() {
@@ -60,17 +76,10 @@ public class AdminUI {
         } else print_response(responseList);
     }
 
-    public static void print_response(Response response) {
-        String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
-        BaseUtils.println(BaseUtils.gson.toJson(response), color);
-    }
-    private void questionCreate() {
+    private static void questionCreate() {
 
         QuestionCreateVO vo = QuestionCreateVO.builder()
                 .body(BaseUtils.readText("body ? "))
-                .build();
-
-        AnswerCreateVO vo1=AnswerCreateVO.builder()
                 .build();
 
         int i = 0;
@@ -92,29 +101,32 @@ public class AdminUI {
 
         System.out.println("Answer:\n");
 
-        AnswerCreateVO body1=new AnswerCreateVO();
+        AnswerCreateVO body1 = new AnswerCreateVO();
         body1.setBody(BaseUtils.readText("Enter the correct answer"));
         body1.setStatus(AnswerStatus.RIGHT);
 
-        AnswerCreateVO body2=new AnswerCreateVO();
+        AnswerCreateVO body2 = new AnswerCreateVO();
         body2.setBody(BaseUtils.readText("Enter the incorrect answer"));
         body2.setStatus(AnswerStatus.WRONG);
 
-        AnswerCreateVO body3=new AnswerCreateVO();
+        AnswerCreateVO body3 = new AnswerCreateVO();
         body3.setBody(BaseUtils.readText("Enter the incorrect answer"));
         body3.setStatus(AnswerStatus.WRONG);
 
-        AnswerCreateVO body4=new AnswerCreateVO();
+        AnswerCreateVO body4 = new AnswerCreateVO();
         body4.setBody(BaseUtils.readText("Enter the incorrect answer"));
         body4.setStatus(AnswerStatus.WRONG);
 
-        vo.setAnswers(Arrays.asList(body1,body2,body3,body4));
-
-
-
-//
-//        Response<DataVO<Long>> response = service.create(vo);
-//        print_response(response);
+        vo.setAnswers(List.of(body1, body2, body3, body4));
+        Response<DataVO<Long>> dataVOResponse = questionService.create(vo);
+        print_response(dataVOResponse);
 
     }
+
+    public static void print_response(Response response) {
+        String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
+        BaseUtils.println(BaseUtils.gson.toJson(response), color);
+    }
+
+
 }
