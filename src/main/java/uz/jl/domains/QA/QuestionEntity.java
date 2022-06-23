@@ -2,6 +2,7 @@ package uz.jl.domains.QA;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uz.jl.domains.Auditable;
 import uz.jl.domains.SubjectEntity;
@@ -19,16 +20,17 @@ import java.util.List;
 @Entity
 @Table(name = "questions", schema = "question")
 @NoArgsConstructor
+@Getter
 public class QuestionEntity extends Auditable {
 
     private String body;
     @Enumerated(EnumType.STRING)
     private QuestionStatus status;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     private List<AnswerEntity> answers;
 
-    @OneToOne(cascade = CascadeType.MERGE, targetEntity = SubjectEntity.class)
+    @OneToOne(cascade = CascadeType.MERGE, targetEntity = SubjectEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "subject_id")
     private SubjectEntity subject;
 

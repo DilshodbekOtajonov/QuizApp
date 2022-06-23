@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import uz.jl.domains.Auditable;
 import uz.jl.enums.AnswerStatus;
 
@@ -22,6 +23,7 @@ import java.sql.Timestamp;
 @Table(name = "answers", schema = "question")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class AnswerEntity extends Auditable {
     private String body;
 

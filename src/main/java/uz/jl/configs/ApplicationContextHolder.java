@@ -5,6 +5,7 @@ import uz.jl.dao.qa.QuestionDAO;
 import uz.jl.dao.subject.SubjectDAO;
 import uz.jl.dao.variant.VariantDAO;
 import uz.jl.service.QuestionService;
+import uz.jl.service.SubjectService;
 import uz.jl.service.auth.AuthUserService;
 import uz.jl.utils.BaseUtils;
 import uz.jl.utils.validators.authUser.AuthUserValidator;
@@ -17,6 +18,7 @@ public class ApplicationContextHolder {
             case "AuthUserDAO" -> (T) AuthUserDAO.getInstance();
             case "BaseUtils" -> (T) BaseUtils.getInstance();
             case "AuthUserService" -> (T) AuthUserService.getInstance();
+            case "SubjectService" -> (T) SubjectService.getInstance();
             case "AuthUserValidator" -> (T) AuthUserValidator.getInstance();
             case "QuestionDAO" -> (T) QuestionDAO.getInstance();
             case "QuestionService" -> (T) QuestionService.getInstance();

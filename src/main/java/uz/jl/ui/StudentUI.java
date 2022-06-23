@@ -1,8 +1,15 @@
 package uz.jl.ui;
 
 import uz.jl.BaseUtils;
+import uz.jl.configs.ApplicationContextHolder;
+import uz.jl.enums.QuestionStatus;
+import uz.jl.service.SubjectService;
 import uz.jl.vo.auth.Session;
+import uz.jl.vo.http.DataVO;
+import uz.jl.vo.http.Response;
+import uz.jl.vo.subject.SubjectVO;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -13,6 +20,7 @@ import java.util.Objects;
 public class StudentUI {
 
     private static final StudentUI studentUI = new StudentUI();
+    private SubjectService subjectService = ApplicationContextHolder.getBean(SubjectService.class);
 
     public static void main(String[] args) {
         if (Objects.isNull(Session.sessionUser)) {
@@ -51,13 +59,17 @@ public class StudentUI {
     }
 
     private void doTest() {
-        // TODO: 6/23/22 make student select subject
         // TODO: 6/23/22 make student select difficulty
         // TODO: 6/23/22 student enters number of questions
         // TODO: 6/23/22 add timer
         // TODO: 6/23/22 ask start test
         // TODO: 6/23/22 show result at the end
-
-
+        Response<DataVO<List<SubjectVO>>> all = subjectService.getAll();
+        for (SubjectVO subjectVO : all.getData().getBody()) {
+            // TODO: 6/23/22 subject list is done now add switch case 
+        }
+        for (QuestionStatus value : QuestionStatus.values()) {
+            // TODO: 6/23/22 make student  
+        }
     }
 }
