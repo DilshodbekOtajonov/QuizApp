@@ -47,6 +47,7 @@ public class GenericDAO<T, ID> implements BaseDAO {
 
     public void update(T entity) {
         save(entity);
+
     }
 
     public T findById(ID id) {

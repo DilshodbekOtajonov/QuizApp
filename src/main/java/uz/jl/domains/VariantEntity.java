@@ -22,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "variants", schema = "test")
 public class VariantEntity extends Auditable {
-    @OneToOne(targetEntity = AuthUser.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = AuthUser.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     private AuthUser user;
     @Enumerated(EnumType.STRING)
