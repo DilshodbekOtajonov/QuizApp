@@ -1,15 +1,13 @@
 package uz.jl.vo.question;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uz.jl.domains.QA.AnswerEntity;
 import uz.jl.enums.QuestionStatus;
-import uz.jl.enums.Subject;
 import uz.jl.vo.BaseVO;
 import uz.jl.vo.answer.AnswerCreateVO;
+import uz.jl.vo.subject.SubjectCreateVO;
 
 import java.util.List;
 
@@ -28,5 +26,5 @@ public class QuestionCreateVO implements BaseVO {
     private String body;
     private QuestionStatus status;
     private List<AnswerCreateVO> answers;
-    private Subject subject;
+    private SubjectCreateVO subject;
 }

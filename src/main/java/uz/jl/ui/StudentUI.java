@@ -37,15 +37,24 @@ public class StudentUI {
     }
 
     private static void updateAuthInfo() {
+        // TODO: 6/23/22 ask change password
+        // TODO: 6/23/22 ask change username
 
     }
 
     private static void showHistory() {
+        // TODO: 6/23/22 show list of variants
 
+        // TODO: 6/23/22 ask id of the one of variants and show variant in details
     }
 
     private static void doTest() {
-
+        // TODO: 6/23/22 make student select subject
+        // TODO: 6/23/22 make student select difficulty
+        // TODO: 6/23/22 student enters number of questions
+        // TODO: 6/23/22 add timer
+        // TODO: 6/23/22 ask start test
+        // TODO: 6/23/22 show result at the end
 
     }
 }
