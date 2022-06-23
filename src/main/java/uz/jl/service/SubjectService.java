@@ -5,7 +5,9 @@ import uz.jl.configs.ApplicationContextHolder;
 import uz.jl.dao.AbstractDAO;
 import uz.jl.dao.GenericDAO;
 import uz.jl.dao.subject.SubjectDAO;
+import uz.jl.domains.subject.SubjectEntity;
 import uz.jl.utils.BaseUtils;
+import uz.jl.vo.http.AppErrorVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 import uz.jl.vo.subject.SubjectCreateVO;
@@ -13,6 +15,9 @@ import uz.jl.vo.subject.SubjectUpdateVO;
 import uz.jl.vo.subject.SubjectVO;
 
 import java.util.List;
+import java.util.Objects;
+
+import static org.reflections.util.ConfigurationBuilder.build;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -59,6 +64,21 @@ public class SubjectService extends AbstractDAO<SubjectDAO> implements GenericCR
     @Override
     public Response<DataVO<SubjectVO>> get(@NonNull Long aLong) {
         return null;
+    }
+
+    public Response<DataVO<SubjectVO>> get(@NonNull String subjectName) {
+        SubjectEntity subjectEntity = dao.findByName(subjectName);
+        if (Objects.isNull(subjectEntity)) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("No subject found").build()), 500);
+        }
+        SubjectVO subjectVO = SubjectVO.childBuilder()
+                .id(subjectEntity.getId())
+                .title(subjectEntity.getTitle())
+                .build();
+
+
+        return new Response<>(new DataVO<>(subjectVO), 200);
     }
 
     @Override

@@ -2,8 +2,13 @@ package uz.jl.dao.qa;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.hibernate.Session;
 import uz.jl.dao.GenericDAO;
 import uz.jl.domains.QA.QuestionEntity;
+import uz.jl.enums.QuestionStatus;
+
+import java.util.List;
+
 
 /**
  * @author "Otajonov Dilshodbek
@@ -21,5 +26,24 @@ public class QuestionDAO extends GenericDAO<QuestionEntity, Long> {
             instance = new QuestionDAO();
         }
         return instance;
+    }
+
+
+    public List<QuestionEntity> findAllBySubjectId(Long subjectId) {
+        Session session = getSession();
+        session.beginTransaction();
+        List<QuestionEntity> entityList = session.createQuery("select t from QuestionEntity t where t.subject.id=:id", QuestionEntity.class).setParameter("id", subjectId).getResultList();
+        session.close();
+        return entityList;
+    }
+
+    public List<QuestionEntity> findAllSubjectIdAndLevel(Long subjectId, QuestionStatus status) {
+        Session session = getSession();
+        session.beginTransaction();
+        List<QuestionEntity> entityList = session.createQuery("select t from QuestionEntity t where t.status=:status  and t.subject.id=:id", QuestionEntity.class)
+                .setParameter("id", subjectId)
+                .setParameter("status", status).getResultList();
+        session.close();
+        return entityList;
     }
 }

@@ -2,8 +2,9 @@ package uz.jl.dao.subject;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.hibernate.Session;
 import uz.jl.dao.GenericDAO;
-import uz.jl.domains.SubjectEntity;
+import uz.jl.domains.subject.SubjectEntity;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -20,4 +21,17 @@ public class SubjectDAO extends GenericDAO<SubjectEntity, Long> {
         }
         return instance;
     }
+
+    public SubjectEntity findByName(String name) {
+        Session session = getSession();
+        session.beginTransaction();
+
+        SubjectEntity result = session.createQuery("select t from SubjectEntity t where  lower(t.title) = lower(:name) ", SubjectEntity.class)
+                .setParameter("name", name)
+                .getSingleResultOrNull();
+
+        session.close();
+        return result;
+    }
+
 }

@@ -3,7 +3,7 @@ package uz.jl.dao.variant;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import uz.jl.dao.GenericDAO;
-import uz.jl.domains.VariantEntity;
+import uz.jl.domains.QA.VariantEntity;
 
 /**
  * @author "Otajonov Dilshodbek

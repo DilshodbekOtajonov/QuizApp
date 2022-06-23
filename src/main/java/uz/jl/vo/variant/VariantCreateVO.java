@@ -1,14 +1,25 @@
 package uz.jl.vo.variant;
 
+import jakarta.persistence.*;
+import lombok.Builder;
+import uz.jl.domains.QA.QuestionEntity;
+import uz.jl.domains.auth.AuthUser;
+import uz.jl.enums.QuestionStatus;
 import uz.jl.vo.BaseVO;
+import uz.jl.vo.question.QuestionVO;
+
+import java.util.List;
 
 /**
  * @author "Otajonov Dilshodbek
  * @since 6/23/22 8:53 AM (Thursday)
  * QuizApp/IntelliJ IDEA
  */
-public class VariantCreateVO implements BaseVO {
 
-    // TODO: 6/23/22 create uchun kerakli ma'lumot
+@Builder
+public class VariantCreateVO implements BaseVO {
+    private AuthUser user;
+    private QuestionStatus status;
+    private List<QuestionVO> questions;
 
 }

@@ -8,6 +8,7 @@ import uz.jl.enums.QuestionStatus;
 import uz.jl.vo.BaseVO;
 import uz.jl.vo.answer.AnswerCreateVO;
 import uz.jl.vo.subject.SubjectCreateVO;
+import uz.jl.vo.subject.SubjectVO;
 
 import java.util.List;
 
@@ -26,5 +27,5 @@ public class QuestionCreateVO implements BaseVO {
     private String body;
     private QuestionStatus status;
     private List<AnswerCreateVO> answers;
-    private SubjectCreateVO subject;
+    private SubjectVO subject;
 }
