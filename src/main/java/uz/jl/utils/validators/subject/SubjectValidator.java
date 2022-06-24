@@ -1,4 +1,4 @@
-package uz.jl.utils.subject;
+package uz.jl.utils.validators.subject;
 
 import uz.jl.configs.ApplicationContextHolder;
 import uz.jl.dao.subject.SubjectDAO;

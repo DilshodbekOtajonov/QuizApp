@@ -6,11 +6,13 @@ import uz.jl.dao.subject.SubjectDAO;
 import uz.jl.dao.variant.VariantDAO;
 import uz.jl.service.QuestionService;
 import uz.jl.service.SubjectService;
+import uz.jl.service.VariantService;
 import uz.jl.service.auth.AuthUserService;
 import uz.jl.utils.BaseUtils;
-import uz.jl.utils.question.QuestionValidator;
-import uz.jl.utils.subject.SubjectValidator;
+import uz.jl.utils.validators.question.QuestionValidator;
+import uz.jl.utils.validators.subject.SubjectValidator;
 import uz.jl.utils.validators.authUser.AuthUserValidator;
+import uz.jl.utils.validators.variantValidators.VariantValidator;
 
 public class ApplicationContextHolder {
 
@@ -21,7 +23,9 @@ public class ApplicationContextHolder {
             case "BaseUtils" -> (T) BaseUtils.getInstance();
             case "AuthUserService" -> (T) AuthUserService.getInstance();
             case "SubjectService" -> (T) SubjectService.getInstance();
+            case "VariantService" -> (T) VariantService.getInstance();
             case "AuthUserValidator" -> (T) AuthUserValidator.getInstance();
+            case "VariantValidator" -> (T) VariantValidator.getInstance();
             case "SubjectValidator" -> (T) SubjectValidator.getInstance();
             case "QuestionValidator" -> (T) QuestionValidator.getInstance();
             case "QuestionDAO" -> (T) QuestionDAO.getInstance();

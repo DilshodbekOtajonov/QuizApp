@@ -2,6 +2,8 @@ package uz.jl.vo.variant;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import uz.jl.domains.QA.QuestionEntity;
 import uz.jl.domains.auth.AuthUser;
 import uz.jl.enums.QuestionStatus;
@@ -17,9 +19,11 @@ import java.util.List;
  */
 
 @Builder
+@Getter
+@Setter
 public class VariantCreateVO implements BaseVO {
-    private AuthUser user;
-    private QuestionStatus status;
-    private List<QuestionVO> questions;
-
+    private String subjectName;
+    private QuestionStatus level;
+    private Integer numberOfQuestions;
+    private Long userId;
 }

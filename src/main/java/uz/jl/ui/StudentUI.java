@@ -3,16 +3,28 @@ package uz.jl.ui;
 import uz.jl.BaseUtils;
 import uz.jl.Colors;
 import uz.jl.configs.ApplicationContextHolder;
+import uz.jl.domains.QA.AnswerEntity;
+import uz.jl.domains.QA.QuestionEntity;
+import uz.jl.domains.QA.VariantEntity;
 import uz.jl.enums.QuestionStatus;
 import uz.jl.service.QuestionService;
 import uz.jl.service.SubjectService;
+import uz.jl.service.VariantService;
 import uz.jl.service.auth.AuthUserService;
 import uz.jl.vo.auth.AuthUserPasswordResetVO;
 import uz.jl.vo.auth.Session;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
+import uz.jl.vo.question.QuestionVO;
+import uz.jl.vo.subject.SubjectVO;
+import uz.jl.vo.variant.VariantCreateVO;
+import uz.jl.vo.variant.VariantVO;
 
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -22,8 +34,11 @@ import java.util.Objects;
 public class StudentUI {
 
     private static final StudentUI studentUI = new StudentUI();
-    private final QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
+    private static final QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
     private static final AuthUserService authUserService = ApplicationContextHolder.getBean(AuthUserService.class);
+    private static final SubjectService subjectService = ApplicationContextHolder.getBean(SubjectService.class);
+
+    private static final VariantService variantService = ApplicationContextHolder.getBean(VariantService.class);
 
     public static void main(String[] args) {
         if (Objects.nonNull(Session.sessionUser)) {
@@ -71,7 +86,7 @@ public class StudentUI {
                 .build();
 
         Response<DataVO<Void>> response = authUserService.changePassword(resetVO);
-        if(response.getStatus()!=200)
+        if (response.getStatus() != 200)
             print_response(response);
 
     }
@@ -79,7 +94,7 @@ public class StudentUI {
     public static void changeUserName() {
         String newUsername = BaseUtils.readText("Insert new username: ");
         Response<DataVO<Void>> response = authUserService.changeUsername(newUsername);
-        if(response.getStatus()!=200)
+        if (response.getStatus() != 200)
             print_response(response);
     }
 
@@ -90,28 +105,93 @@ public class StudentUI {
     }
 
     private void doTest() {
-        // TODO: 6/23/22 student enters number of questions
-        // TODO: 6/23/22 add timer
-        // TODO: 6/23/22 ask start test
         // TODO: 6/23/22 show result at the end
+        try {
+            VariantEntity variant = createVariant();
+            BaseUtils.println("\n\nStart 1", Colors.YELLOW);
+            BaseUtils.println("cancel any key", Colors.YELLOW);
+            String choice = BaseUtils.readText("choice ? ");
+            switch (choice) {
+                case "1" -> BaseUtils.println("Test started");
+                default -> {
+                    BaseUtils.println("Test canceled");
+                    return;
+                }
+            }
+            LocalTime startTime = LocalTime.now();
+            int numberOfQuestion = variant.getQuestions().size();
+            LocalTime endTime = startTime.plusMinutes(numberOfQuestion);
+            BaseUtils.println("Start time " + startTime);
+            BaseUtils.println("End time " + endTime);
+            BaseUtils.println("You have %s minutes\n".formatted(numberOfQuestion));
+            for (QuestionEntity question : variant.getQuestions()) {
+                String[] abcs = {"A", "B", "C", "D"};
+                Set<String> abc = new HashSet<>();
 
+                if (LocalTime.now().isAfter(endTime))
+                    break;
+                BaseUtils.println(question.getBody(), Colors.PURPLE);
+                List<AnswerEntity> answers = question.getAnswers();
+                for (AnswerEntity answer : answers) {
+                    System.out.println(answer);
+                }
+            }
+
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    public static void print_response(Response response) {
+        String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
+        BaseUtils.println(BaseUtils.gson.toJson(response), color);
+    }
+
+
+    private VariantEntity createVariant() {
+        Response<DataVO<List<SubjectVO>>> subjectListResponse = subjectService.getAll();
+        if (subjectListResponse.getStatus() != 200) {
+            print_response(subjectListResponse);
+            throw new RuntimeException();
+        }
+        BaseUtils.println(subjectListResponse.getData().getBody());
         String subjectName = BaseUtils.readText("Subject name? ");
-        BaseUtils.println("1.EASY 2.MEDIUM 3.HARD");
+        BaseUtils.println("1.EASY \n2.MEDIUM \n3.HARD", Colors.PURPLE);
         String choice = BaseUtils.readText("choice ? ");
         QuestionStatus level = null;
         switch (choice) {
             case "1" -> level = QuestionStatus.EASY;
             case "2" -> level = QuestionStatus.MEDIUM;
             case "3" -> level = QuestionStatus.HARD;
+            default -> {
+                BaseUtils.println("Invalid choice", Colors.RED);
+                throw new RuntimeException();
+            }
+        }
+        Integer numberOfQuestions;
+        try {
+            numberOfQuestions = Integer.valueOf(BaseUtils.readText("number of question ? "));
+        } catch (NumberFormatException e) {
+            BaseUtils.println("Invalid input: Number should be input", Colors.RED);
+            throw new RuntimeException();
+
         }
 
-        Integer numberOfQuestions = Integer.valueOf(BaseUtils.readText("number of question ? "));
 
-        questionService.getAll(subjectName, level, numberOfQuestions);
+        VariantCreateVO variantCreateVO = VariantCreateVO.builder()
+                .level(level)
+                .subjectName(subjectName)
+                .numberOfQuestions(numberOfQuestions)
+                .userId(Session.sessionUser.getId())
+                .build();
 
-    }
-    public static void print_response(Response response) {
-        String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
-        BaseUtils.println(BaseUtils.gson.toJson(response), color);
+        Response<DataVO<VariantEntity>> variantResponse = variantService.getVariant(variantCreateVO);
+        if (variantResponse.getStatus() != 200) {
+            print_response(variantResponse);
+            throw new RuntimeException();
+        }
+        return variantResponse.getData().getBody();
+
     }
 }

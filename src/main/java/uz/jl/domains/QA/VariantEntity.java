@@ -3,6 +3,7 @@ package uz.jl.domains.QA;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uz.jl.domains.Auditable;
 import uz.jl.domains.auth.AuthUser;
@@ -21,14 +22,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "variants", schema = "test")
+@Getter
 public class VariantEntity extends Auditable {
-    @OneToOne(targetEntity = AuthUser.class)
+    @OneToOne(targetEntity = AuthUser.class,cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     private AuthUser user;
     @Enumerated(EnumType.STRING)
     private QuestionStatus status;
 
-    @ManyToMany(targetEntity = QuestionEntity.class, cascade = CascadeType.ALL)
+    @Column(columnDefinition = "smallint default 0", nullable = false)
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+    private Boolean completed;
+    @ManyToMany(targetEntity = QuestionEntity.class, cascade = CascadeType.MERGE)
     @JoinTable(name = "variant_question",
             joinColumns = @JoinColumn(name = "variant_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id"),
@@ -44,5 +49,6 @@ public class VariantEntity extends Auditable {
         this.user = user;
         this.questions = questions;
         this.numberOfRightAnswers = numberOfRightAnswers;
+        this.completed = false;
     }
 }

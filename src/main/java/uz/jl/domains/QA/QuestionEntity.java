@@ -26,7 +26,7 @@ public class QuestionEntity extends Auditable {
     private String body;
     @Enumerated(EnumType.STRING)
     private QuestionStatus status;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     private List<AnswerEntity> answers;
 

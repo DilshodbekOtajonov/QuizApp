@@ -3,12 +3,11 @@ package uz.jl.service;
 import lombok.NonNull;
 import uz.jl.configs.ApplicationContextHolder;
 import uz.jl.dao.AbstractDAO;
-import uz.jl.dao.GenericDAO;
 import uz.jl.dao.subject.SubjectDAO;
 import uz.jl.domains.subject.SubjectEntity;
 import uz.jl.exceptions.ValidationException;
 import uz.jl.utils.BaseUtils;
-import uz.jl.utils.subject.SubjectValidator;
+import uz.jl.utils.validators.subject.SubjectValidator;
 import uz.jl.vo.http.AppErrorVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
@@ -19,8 +18,6 @@ import uz.jl.vo.subject.SubjectVO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static org.reflections.util.ConfigurationBuilder.build;
 
 /**
  * @author "Otajonov Dilshodbek
