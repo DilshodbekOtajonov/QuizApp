@@ -5,6 +5,7 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import uz.jl.domains.Auditable;
 
 import java.sql.Timestamp;
@@ -16,6 +17,7 @@ import java.sql.Timestamp;
  */
 
 @Entity
+@ToString
 @Table(schema = "subject",name = "subjects")
 @NoArgsConstructor
 @Getter

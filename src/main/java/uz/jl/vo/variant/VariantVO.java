@@ -1,29 +1,30 @@
 package uz.jl.vo.variant;
 
 import lombok.Builder;
-import uz.jl.domains.QA.QuestionEntity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import uz.jl.domains.auth.AuthUser;
 import uz.jl.enums.QuestionStatus;
 import uz.jl.vo.GenericVO;
 import uz.jl.vo.question.QuestionVO;
 
+import java.sql.Timestamp;
 import java.util.List;
 
-/**
- * @author "Otajonov Dilshodbek
- * @since 6/23/22 8:53 AM (Thursday)
- * QuizApp/IntelliJ IDEA
- */
+@Getter
+@ToString
+@Setter
 public class VariantVO extends GenericVO {
-    private AuthUser user;
+    private Timestamp createdAt;
     private QuestionStatus status;
     private List<QuestionVO> questions;
     private Integer numberOfRightAnswers;
 
     @Builder(builderMethodName = "childBuilder")
-    public VariantVO(Long id, AuthUser user, QuestionStatus status, List<QuestionVO> questions, Integer numberOfRightAnswers) {
+    public VariantVO(Long id,Timestamp createdAt,QuestionStatus status, List<QuestionVO> questions, Integer numberOfRightAnswers) {
         super(id);
-        this.user = user;
+        this.createdAt=createdAt;
         this.status = status;
         this.questions = questions;
         this.numberOfRightAnswers = numberOfRightAnswers;

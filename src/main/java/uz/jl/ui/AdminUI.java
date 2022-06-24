@@ -17,14 +17,7 @@ import uz.jl.vo.question.QuestionVO;
 
 
 import java.util.List;
-
-/**
- * @author "Otajonov Dilshodbek
- * @since 6/22/22 2:31 PM (Wednesday)
- * QuizApp/IntelliJ IDEA
- */
 public class AdminUI {
-
     static AuthUserService authUserService = ApplicationContextHolder.getBean(AuthUserService.class);
     static QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
 
@@ -109,7 +102,6 @@ public class AdminUI {
 
     private static void showAllQuestionList() {
         Response<DataVO<List<QuestionVO>>> all = questionService.getAll();
-
         for (QuestionVO questionVO : all.getData().getBody()) {
             BaseUtils.println(questionVO);
         }
@@ -191,6 +183,4 @@ public class AdminUI {
         String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
         BaseUtils.println(BaseUtils.gson.toJson(response), color);
     }
-
-
 }

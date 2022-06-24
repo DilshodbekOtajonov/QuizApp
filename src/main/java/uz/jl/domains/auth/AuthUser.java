@@ -12,6 +12,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user",schema = "auth")

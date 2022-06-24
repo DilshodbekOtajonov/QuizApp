@@ -6,6 +6,7 @@ import uz.jl.dao.subject.SubjectDAO;
 import uz.jl.dao.variant.VariantDAO;
 import uz.jl.service.QuestionService;
 import uz.jl.service.SubjectService;
+import uz.jl.service.VariantService;
 import uz.jl.service.auth.AuthUserService;
 import uz.jl.utils.BaseUtils;
 import uz.jl.utils.validators.authUser.AuthUserValidator;
@@ -24,6 +25,7 @@ public class ApplicationContextHolder {
             case "QuestionService" -> (T) QuestionService.getInstance();
             case "SubjectDAO" -> (T) SubjectDAO.getInstance();
             case "VariantDAO" -> (T) VariantDAO.getInstance();
+            case "VariantService" -> (T) VariantService.getInstance();
             default -> throw new RuntimeException("Bean Not Found");
         };
     }

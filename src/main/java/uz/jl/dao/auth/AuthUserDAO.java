@@ -50,7 +50,6 @@ public class AuthUserDAO extends GenericDAO<AuthUser, Long> {
         Session session = getSession();
         session.beginTransaction();
         List<AuthUser> resultList = session.createQuery("select t from AuthUser t where t.role=:role", AuthUser.class).setParameter("role",role).getResultList();
-
         session.close();
         return resultList;
     }
