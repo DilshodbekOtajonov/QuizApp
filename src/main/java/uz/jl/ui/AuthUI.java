@@ -68,10 +68,7 @@ public class AuthUI {
                 BaseUtils.readText("password ? ")
         );
         print_response(response);
-
     }
-
-
     public static void print_response(Response response) {
         String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
         BaseUtils.println(BaseUtils.gson.toJson(response), color);

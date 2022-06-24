@@ -35,12 +35,17 @@ public class UserUI {
     }
 
     private static void setUserAsTeacher() {
-        authUserService.setRole(Session.sessionUser.getId(), AuthRole.TEACHER);
 
+
+        authUserService.setRole(Session.sessionUser.getId(), AuthRole.TEACHER);
+        Session.sessionUser.setRole(AuthRole.TEACHER);
     }
 
     private static void setUserAsStudent() {
+
+
         authUserService.setRole(Session.sessionUser.getId(), AuthRole.STUDENT);
+        Session.sessionUser.setRole(AuthRole.STUDENT);
     }
 }
 

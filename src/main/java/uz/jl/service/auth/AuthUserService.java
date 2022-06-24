@@ -47,7 +47,13 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
                     .email(vo.getEmail())
                     .build();
             System.out.println(authUser.getRole().name());
-            dao.save(authUser);
+            AuthUser save = dao.save(authUser);
+            Session.setSessionUser(AuthUserVO.childBuilder()
+                    .id(save.getId())
+                    .role(save.getRole())
+                    .username(save.getUsername())
+                    .createdAt(save.getCreatedAt().toLocalDateTime())
+                    .build());
             return new Response<>(new DataVO<>(authUser.getId()), 200);
         } catch (ValidationException e) {
             return new Response<>(new DataVO<>(AppErrorVO.builder()

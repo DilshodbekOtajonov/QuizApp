@@ -26,7 +26,7 @@ public class TeacherEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String username;
+    private String name;
     private String surname;
     @ManyToMany(targetEntity = SubjectEntity.class, cascade = CascadeType.MERGE)
     @JoinTable(name = "teacher_subject",

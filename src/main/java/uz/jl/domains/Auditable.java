@@ -38,6 +38,7 @@ public class Auditable implements BaseDomain {
 
     public Auditable(Long id, Timestamp createdAt, Long createdBy, Timestamp updatedAt, Long updatedBy, Boolean deleted) {
         this.id = id;
+
         this.createdAt = createdAt;
         if (Objects.isNull(createdBy))
             createdBy = -1l;

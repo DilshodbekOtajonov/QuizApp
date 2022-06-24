@@ -1,6 +1,7 @@
 package uz.jl.vo.auth;
 
 import lombok.Getter;
+import lombok.Setter;
 import uz.jl.enums.AuthRole;
 
 import java.util.Objects;
@@ -21,6 +22,7 @@ public class Session {
     }
 
     @Getter
+    @Setter
     public static class SessionUser {
 
         private Long id;
