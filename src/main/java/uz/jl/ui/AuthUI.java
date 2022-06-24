@@ -45,7 +45,7 @@ public class AuthUI {
                 case STUDENT -> StudentUI.main(args);
                 case ADMIN -> AdminUI.main(args);
                 case TEACHER -> TeacherUI.main(args);
-
+                case USER -> UserUI.main(args);
             }
         }
         main(args);
