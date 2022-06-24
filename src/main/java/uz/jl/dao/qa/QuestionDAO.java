@@ -56,4 +56,5 @@ public class QuestionDAO extends GenericDAO<QuestionEntity, Long> {
         session.close();
         return entityList;
     }
+
 }

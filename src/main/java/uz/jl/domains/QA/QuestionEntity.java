@@ -1,9 +1,7 @@
 package uz.jl.domains.QA;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import uz.jl.domains.Auditable;
 import uz.jl.domains.subject.SubjectEntity;
 import uz.jl.enums.QuestionStatus;
@@ -21,21 +19,23 @@ import java.util.List;
 @Table(name = "questions", schema = "question")
 @NoArgsConstructor
 @Getter
+@Setter
+@ToString
 public class QuestionEntity extends Auditable {
 
     private String body;
     @Enumerated(EnumType.STRING)
     private QuestionStatus status;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "question_id")
     private List<AnswerEntity> answers;
 
-    @OneToOne(targetEntity = SubjectEntity.class, fetch = FetchType.EAGER)
+
+    @OneToOne(cascade = CascadeType.MERGE, targetEntity = SubjectEntity.class)
     @JoinColumn(name = "subject_id")
     private SubjectEntity subject;
 
     @Builder(builderMethodName = "childBuilder")
-
     public QuestionEntity(Long id, Timestamp createdAt, Long createdBy, Timestamp updatedAt, Long updatedBy, Boolean deleted, String body, QuestionStatus status, List<AnswerEntity> answers, SubjectEntity subject) {
         super(id, createdAt, createdBy, updatedAt, updatedBy, deleted);
         this.body = body;

@@ -1,10 +1,12 @@
 package uz.jl.domains.subject;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import uz.jl.domains.Auditable;
 
 import java.sql.Timestamp;
@@ -16,10 +18,12 @@ import java.sql.Timestamp;
  */
 
 @Entity
-@Table(schema = "subject",name = "subjects")
+@Table(schema = "subject", name = "subjects")
 @NoArgsConstructor
 @Getter
+@ToString
 public class SubjectEntity extends Auditable {
+    @Column(nullable = false, unique = true)
     private String title;
 
     @Builder(builderMethodName = "childBuilder")

@@ -6,7 +6,9 @@ import uz.jl.dao.AbstractDAO;
 import uz.jl.dao.GenericDAO;
 import uz.jl.dao.subject.SubjectDAO;
 import uz.jl.domains.subject.SubjectEntity;
+import uz.jl.exceptions.ValidationException;
 import uz.jl.utils.BaseUtils;
+import uz.jl.utils.subject.SubjectValidator;
 import uz.jl.vo.http.AppErrorVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
@@ -30,7 +32,7 @@ public class SubjectService extends AbstractDAO<SubjectDAO> implements GenericCR
         SubjectCreateVO,
         SubjectUpdateVO,
         Long> {
-
+    private final SubjectValidator validator = ApplicationContextHolder.getBean(SubjectValidator.class);
     private static SubjectService instance;
 
     private SubjectService() {
@@ -49,8 +51,23 @@ public class SubjectService extends AbstractDAO<SubjectDAO> implements GenericCR
 
     @Override
     public Response<DataVO<Long>> create(@NonNull SubjectCreateVO vo) {
-        return null;
+
+        try {
+            validator.validOnCreate(vo);
+            SubjectEntity question = SubjectEntity.childBuilder()
+                    .title(vo.getTitle())
+                    .createdBy(vo.getCreatedBy())
+                    .build();
+            SubjectEntity save = dao.save(question);
+
+            return new Response<>(new DataVO<>(save.getId()), 200);
+        } catch (ValidationException e) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage(e.getMessage())
+                    .build()), 400);
+        }
     }
+
 
     @Override
     public Response<DataVO<Void>> update(@NonNull SubjectUpdateVO vo) {
@@ -85,10 +102,10 @@ public class SubjectService extends AbstractDAO<SubjectDAO> implements GenericCR
     @Override
     public Response<DataVO<List<SubjectVO>>> getAll() {
         List<SubjectEntity> all = dao.findAll();
-        if (Objects.isNull(all))
+        if (Objects.isNull(all) || all.isEmpty())
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("No subjects found")
-                    .build()));
+                    .build()),404);
 
         List<SubjectVO> result = new ArrayList<>();
         for (SubjectEntity subjectEntity : all) {
@@ -99,6 +116,6 @@ public class SubjectService extends AbstractDAO<SubjectDAO> implements GenericCR
             result.add(subjectVO);
         }
 
-        return new Response<>(new DataVO<>(result));
+        return new Response<>(new DataVO<>(result),200);
     }
 }

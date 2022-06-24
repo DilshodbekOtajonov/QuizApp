@@ -27,5 +27,6 @@ public class QuestionCreateVO implements BaseVO {
     private String body;
     private QuestionStatus status;
     private List<AnswerCreateVO> answers;
-    private SubjectVO subject;
+    private String subjectName;
+    private Long createdBy;
 }

@@ -32,7 +32,7 @@ public class Auditable implements BaseDomain {
 
     private Long updatedBy;
 
-    @Column(columnDefinition = "smallint default 0",nullable = false)
+    @Column(columnDefinition = "smallint default 0", nullable = false)
     @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     private Boolean deleted;
 
@@ -44,6 +44,8 @@ public class Auditable implements BaseDomain {
         this.createdBy = createdBy;
         this.updatedAt = updatedAt;
         this.updatedBy = updatedBy;
+        if (Objects.isNull(deleted))
+            deleted = false;
         this.deleted = deleted;
     }
 }
