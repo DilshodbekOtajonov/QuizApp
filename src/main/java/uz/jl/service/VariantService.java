@@ -122,7 +122,7 @@ public class VariantService extends AbstractDAO<VariantDAO> implements GenericCR
     }
 
     public Response<DataVO<List<VariantVO>>> getAllByStudentId(Long studentId) {
-        List<VariantEntity> all = dao.findByStudentId(Session.sessionUser.getId());
+        List<VariantEntity> all = dao.findByStudentId(studentId);
 
         if (all.isEmpty()) {
             return new Response<>(new DataVO<>(AppErrorVO.builder()

@@ -169,7 +169,10 @@ public class AdminUI {
 
     private static void showAllQuestionList() {
         Response<DataVO<List<QuestionVO>>> all = questionService.getAll();
-
+        if(all.getStatus()!=200){
+            print_response(all);
+            return;
+        }
         for (QuestionVO questionVO : all.getData().getBody()) {
             BaseUtils.println(questionVO);
         }
@@ -219,6 +222,7 @@ public class AdminUI {
                 .body(BaseUtils.readText("body ? "))
                 .createdBy(Session.sessionUser.getId())
                 .subjectName(subjectName)
+                .createdBy(Session.sessionUser.getId())
                 .build();
 
 

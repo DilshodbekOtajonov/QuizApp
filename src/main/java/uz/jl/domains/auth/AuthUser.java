@@ -18,13 +18,13 @@ import java.util.Objects;
 public class
 AuthUser extends Auditable {
 
-    @Column(unique = true, nullable = false)
+    @Column( nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @Enumerated(EnumType.STRING)

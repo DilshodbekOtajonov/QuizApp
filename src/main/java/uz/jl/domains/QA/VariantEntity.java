@@ -31,7 +31,7 @@ public class VariantEntity extends Auditable {
     @Column(columnDefinition = "smallint default 0", nullable = false)
     @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     private Boolean completed;
-    @ManyToMany(targetEntity = QuestionEntity.class, cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = QuestionEntity.class, cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(name = "variant_question",
             joinColumns = @JoinColumn(name = "variant_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id"),

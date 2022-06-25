@@ -7,6 +7,8 @@ import uz.jl.utils.validators.GenericValidator;
 import uz.jl.vo.question.QuestionCreateVO;
 import uz.jl.vo.question.QuestionUpdateVO;
 
+import java.util.Objects;
+
 public class QuestionValidator extends GenericValidator<QuestionCreateVO, QuestionUpdateVO, Long> {
 
     private static QuestionValidator instance;
@@ -29,17 +31,18 @@ public class QuestionValidator extends GenericValidator<QuestionCreateVO, Questi
 
     @Override
     public void validOnCreate(QuestionCreateVO vo) throws ValidationException {
-        existsByBody(vo.getBody());
+        if (Objects.isNull(vo.getBody()) ) {
+            throw new ValidationException("Question body can not be null");
+        }
+        if(Objects.isNull(vo.getAnswers()) ){
+            throw new ValidationException("Answer list can not be null");
+        }
+        if(Objects.isNull(vo.getSubjectName())){
+            throw new ValidationException("Subject name can not be null");
+        }
 
     }
 
-    private void existsByBody(String body) {
-//        if (Objects.nonNull(body)) {
-//            if (body.isBlank()) {
-//                throw new ValidationException("The subject cannot be empty ");
-//            }
-//        } else throw new ValidationException("Question body can not be null");
-    }
 
     @Override
     public void validOnUpdate(QuestionUpdateVO vo) throws ValidationException {

@@ -9,6 +9,7 @@ import uz.jl.dao.GenericDAO;
 import uz.jl.domains.auth.AuthUser;
 import uz.jl.enums.AuthRole;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class AuthUserDAO extends GenericDAO<AuthUser, Long> {
         Session session = getSession();
         session.beginTransaction();
         Query<AuthUser> query = session
-                .createQuery("select t from AuthUser t where lower(t.username) = lower(:username) ",
+                .createQuery("select t from AuthUser t where lower(t.username) = lower(:username) and t.deleted=false ",
                         AuthUser.class);
         query.setParameter("username", username);
         Optional<AuthUser> result = Optional.ofNullable(query.getSingleResultOrNull());
@@ -36,6 +37,7 @@ public class AuthUserDAO extends GenericDAO<AuthUser, Long> {
         return result;
 
     }
+
 
     public Optional<AuthUser> findByEmail(String email) {
         Session session = getSession();
@@ -55,6 +57,16 @@ public class AuthUserDAO extends GenericDAO<AuthUser, Long> {
         List<AuthUser> resultList = session.createQuery("select t from AuthUser t where t.role=:role", AuthUser.class).setParameter("role", role).getResultList();
         session.close();
         return resultList;
+    }
+
+    public static void main(String[] args) {
+        AuthUserDAO instance1 = getInstance();
+        try {
+            instance1.deleteById(5l);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

@@ -16,6 +16,7 @@ public class TeacherUI {
         if (Objects.nonNull(Session.sessionUser)) {
             BaseUtils.println("CRUD questions -> 1 ");
             BaseUtils.println("Settings  -> 2");
+            BaseUtils.println("Log Out  -> l");
             BaseUtils.println("Quit  -> q");
 
             String option = BaseUtils.readText("Insert option: ");
@@ -23,6 +24,7 @@ public class TeacherUI {
             switch (option) {
                 case "1" -> crud();
                 case "2" -> settings();
+                case "l" -> Session.setSessionUser(null);
                 case "q" -> System.exit(0);
                 default -> BaseUtils.println("Wrong option");
             }
@@ -44,6 +46,8 @@ public class TeacherUI {
     }
 
     private static void crud() {
-
+        BaseUtils.println("create questions-> 1 ");
+        BaseUtils.println("Settings  -> 2");
+        BaseUtils.println("Quit  -> q");
     }
 }

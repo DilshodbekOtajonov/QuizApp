@@ -50,7 +50,7 @@ public class QuestionDAO extends GenericDAO<QuestionEntity, Long> {
     public List<QuestionEntity> findAllBySubjectIdAndLevel(Long subjectId, QuestionStatus status, Integer numberOfQuestion) {
         Session session = getSession();
         session.beginTransaction();
-        List<QuestionEntity> entityList = session.createQuery("select t from QuestionEntity t where t.status=:status  and t.subject.id=:id ", QuestionEntity.class)
+        List<QuestionEntity> entityList = session.createQuery("select t from QuestionEntity t where t.status=:status  and t.subject.id=:id", QuestionEntity.class)
                 .setParameter("id", subjectId)
                 .setParameter("status", status)
                 .setMaxResults(numberOfQuestion)

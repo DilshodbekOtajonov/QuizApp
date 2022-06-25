@@ -1,6 +1,7 @@
-package uz.jl.dao;
+package uz.jl.dao.student;
 
 
+import uz.jl.dao.GenericDAO;
 import uz.jl.domains.auth.StudentEntity;
 
 

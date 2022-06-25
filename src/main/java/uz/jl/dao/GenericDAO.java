@@ -3,6 +3,7 @@ package uz.jl.dao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import uz.jl.configs.HibernateConfigurer;
+import uz.jl.domains.QA.QuestionEntity;
 
 import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
@@ -34,10 +35,10 @@ public class GenericDAO<T, ID> implements BaseDAO {
 
     public void deleteById(ID id) throws SQLException {
         T entity = findById(id);
-        // TODO: 6/20/2022 create your custom exception here
         if (Objects.isNull(entity)) {
             throw new SQLException("Object not found by given id '%s'".formatted(id));
         }
+
         Session session = getSession();
         session.beginTransaction();
         session.remove(entity);
@@ -65,7 +66,7 @@ public class GenericDAO<T, ID> implements BaseDAO {
     public List<T> findAll() {
         Session session = getSession();
         session.beginTransaction();
-        List<T> resultList = session.createQuery("from " + persistentClass.getSimpleName()+" where deleted=false", persistentClass)
+        List<T> resultList = session.createQuery("from " + persistentClass.getSimpleName() + " where deleted=false", persistentClass)
                 .getResultList();
         session.close();
         return resultList;

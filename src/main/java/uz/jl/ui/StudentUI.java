@@ -14,6 +14,7 @@ import uz.jl.service.VariantService;
 import uz.jl.service.auth.AuthUserService;
 import uz.jl.vo.answer.AnswerVO;
 import uz.jl.vo.auth.AuthUserPasswordResetVO;
+import uz.jl.vo.auth.AuthUserVO;
 import uz.jl.vo.auth.Session;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
@@ -34,10 +35,8 @@ import java.util.Objects;
 public class StudentUI {
 
     private static final StudentUI studentUI = new StudentUI();
-    private static final QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
     private static final AuthUserService authUserService = ApplicationContextHolder.getBean(AuthUserService.class);
     private static final SubjectService subjectService = ApplicationContextHolder.getBean(SubjectService.class);
-
     private static final VariantService variantService = ApplicationContextHolder.getBean(VariantService.class);
 
     public static void main(String[] args) {
@@ -46,6 +45,7 @@ public class StudentUI {
             BaseUtils.println("Do test -> 1");
             BaseUtils.println("Show history ->2");
             BaseUtils.println("Change auth info -> 3");
+            BaseUtils.println("Delete account-> 4");
             BaseUtils.println("logout -> l");
             BaseUtils.println("Quit -> q");
 
@@ -54,6 +54,7 @@ public class StudentUI {
                 case "1" -> studentUI.doTest();
                 case "2" -> studentUI.showHistory();
                 case "3" -> studentUI.updateAuthInfo();
+                case "4" -> studentUI.deletedStudent();
                 case "l" -> Session.setSessionUser(null);
                 case "q" -> {
                     BaseUtils.println("Bye");
@@ -140,7 +141,6 @@ public class StudentUI {
                 }
             }
         }
-
     }
 
     private void doTest() {
@@ -190,7 +190,7 @@ public class StudentUI {
             variant.setCompleted(true);
             variantService.UpdateVariantEntity(variant);
 
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
     }
@@ -245,5 +245,14 @@ public class StudentUI {
         }
         return variantResponse.getData().getBody();
 
+    }
+
+    private void deletedStudent() {
+        Response<DataVO<Void>> response = authUserService.deleteUser(
+                Session.sessionUser.getId(),
+                BaseUtils.readText("password ? ")
+        );
+        if (response.getStatus() != 200)
+            print_response(response);
     }
 }

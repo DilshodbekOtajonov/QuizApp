@@ -15,6 +15,7 @@ import uz.jl.vo.http.AppErrorVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -70,11 +71,21 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
 
     @Override
     public Response<DataVO<Void>> delete(@NonNull Long id) {
-        return null;
+        AuthUser authUser = dao.findById(id);
+
+        if (authUser == null)
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("user not find by id")
+                    .build()), 404);
+        authUser.setDeleted(true);
+
+        dao.update(authUser);
+        return new Response<>(new DataVO<>(null), 200);
     }
 
     @Override
     public Response<DataVO<AuthUserVO>> get(@NonNull Long id) {
+
         try {
             validator.validateKey(id);
             AuthUser authUser = dao.findById(id);
@@ -86,11 +97,11 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
                     .createdAt(authUser.getCreatedAt().toLocalDateTime())
                     .build();
 
-            return new Response<>(new DataVO<>(authUserVO));
+            return new Response<>(new DataVO<>(authUserVO), 200);
         } catch (ValidationException e) {
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage(e.getMessage())
-                    .build()));
+                    .build()), 400);
         }
     }
 
@@ -105,7 +116,7 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         if (resultList.isEmpty()) {
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("No user find with role '%s'".formatted(role.name()))
-                    .build()));
+                    .build()), 500);
         }
         for (AuthUser authUser : resultList) {
             AuthUserVO authUserVO = AuthUserVO.childBuilder()
@@ -124,10 +135,10 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
 
     public Response<DataVO<AuthUserVO>> login(String username, String password) {
         Optional<AuthUser> userByUsername = dao.findByUserName(username);
-        if (userByUsername.isEmpty())
+        if (userByUsername.isEmpty() || userByUsername.get().getDeleted())
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("user not found")
-                    .build()),404);
+                    .build()), 404);
 
         AuthUser authUser = userByUsername.get();
 
@@ -135,7 +146,7 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         if (!hasPasswordMatched)
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("Bad credentials")
-                    .build()),400);
+                    .build()), 400);
 
         AuthUserVO authUserVO = AuthUserVO.childBuilder()
                 .username(authUser.getUsername())
@@ -149,25 +160,33 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         return new Response<>(new DataVO<>(authUserVO), 200);
     }
 
-    public void setRole(Long user_id, AuthRole option) {
+    public Response<DataVO<Void>> setRole(Long user_id, AuthRole option) {
+        try {
+            Optional<AuthUser> findById = Optional.ofNullable(dao.findById(user_id));
+            if (findById.isEmpty() || findById.get().getDeleted())
+                return new Response<>(new DataVO<>(AppErrorVO.builder()
+                        .friendlyMessage("user not found")
+                        .build()), 500);
+            AuthUser authUser = findById.get();
 
-        Optional<AuthUser> findById = Optional.ofNullable(dao.findById(user_id));
-        if (findById.isEmpty())
-            throw new RuntimeException("user not found");
-        AuthUser authUser = findById.get();
+            authUser.setRole(option);
 
-        authUser.setRole(option);
-
-        dao.update(authUser);
-
+            dao.update(authUser);
+            return new Response<>(new DataVO<>(null), 200);
+        } catch (Exception e) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Oops something went wrong")
+                    .build()), 400);
+        }
     }
 
     public Response<DataVO<Void>> changeUsername(String newUsername) {
         Optional<AuthUser> usernameCheck = dao.findByUserName(newUsername);
-        if (usernameCheck.isPresent())
+        if (usernameCheck.isPresent() && !usernameCheck.get().getDeleted())
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("username '%s' already taken".formatted(newUsername))
                     .build()), 400);
+
         AuthUser authUser = dao.findById(Session.sessionUser.getId());
         authUser.setUsername(newUsername);
         dao.update(authUser);
@@ -200,5 +219,26 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
             instance = new AuthUserService();
         }
         return instance;
+    }
+
+    public Response<DataVO<Void>> deleteUser(Long userId, String password) {
+        AuthUser authUser = dao.findById(Session.sessionUser.getId());
+
+        boolean matchPassword = utils.matchPassword(password, authUser.getPassword());
+        if (!matchPassword) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Password incorrect")
+                    .build()), 404);
+        }
+
+        Response<DataVO<Void>> deleteResponse = delete(userId);
+
+        if (deleteResponse.getStatus() != 200)
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("oops something went")
+                    .build()), 404);
+
+        Session.setSessionUser(null);
+        return new Response<>(new DataVO<>(null), 200);
     }
 }

@@ -10,6 +10,7 @@ import uz.jl.domains.QA.AnswerEntity;
 import uz.jl.domains.QA.QuestionEntity;
 import uz.jl.domains.subject.SubjectEntity;
 import uz.jl.enums.QuestionStatus;
+import uz.jl.exceptions.ValidationException;
 import uz.jl.utils.BaseUtils;
 
 import uz.jl.utils.validators.question.QuestionValidator;
@@ -57,31 +58,37 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
 
     @Override
     public Response<DataVO<Long>> create(@NonNull QuestionCreateVO vo) {
-        validator.validOnCreate(vo);
-        List<AnswerEntity> answerList = new ArrayList<>();
-        for (AnswerCreateVO answer : vo.getAnswers()) {
-            AnswerEntity build = AnswerEntity.childBuilder()
-                    .body(answer.getBody())
-                    .status(answer.getStatus())
+        try {
+            validator.validOnCreate(vo);
+            List<AnswerEntity> answerList = new ArrayList<>();
+            for (AnswerCreateVO answer : vo.getAnswers()) {
+                AnswerEntity build = AnswerEntity.childBuilder()
+                        .body(answer.getBody())
+                        .status(answer.getStatus())
+                        .build();
+                answerList.add(build);
+            }
+            SubjectEntity subjectEntity = subjectDAO.findByName(vo.getSubjectName());
+            if (Objects.isNull(subjectEntity))
+                return new Response<>(new DataVO<>(AppErrorVO.builder()
+                        .friendlyMessage("subject not found by name '%s'".formatted(vo.getSubjectName()))
+                        .build()), 500);
+            QuestionEntity question = QuestionEntity.childBuilder()
+                    .body(vo.getBody())
+                    .answers(answerList)
+                    .status(vo.getStatus())
+                    .createdBy(vo.getCreatedBy())
+                    .subject(subjectEntity)
                     .build();
-            answerList.add(build);
-        }
-        SubjectEntity subjectEntity = subjectDAO.findByName(vo.getSubjectName());
-        if (Objects.isNull(subjectEntity))
-            return new Response<>(new DataVO<>(AppErrorVO.builder()
-                    .friendlyMessage("subject not found by name '%s'".formatted(vo.getSubjectName()))
-                    .build()), 500);
-        QuestionEntity question = QuestionEntity.childBuilder()
-                .body(vo.getBody())
-                .answers(answerList)
-                .status(vo.getStatus())
-                .createdBy(vo.getCreatedBy())
-                .subject(subjectEntity)
-                .build();
 
-        System.out.println(question);
-        QuestionEntity save = dao.save(question);
-        return new Response<>(new DataVO<>(save.getId()), 200);
+            QuestionEntity save = dao.save(question);
+            return new Response<>(new DataVO<>(save.getId()), 200);
+        } catch (ValidationException e) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage(e.getMessage())
+                    .build()), 400);
+
+        }
     }
 
     @Override
@@ -118,7 +125,7 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
         if (all.isEmpty()) {
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("No question find")
-                    .build()));
+                    .build()), 500);
         }
         List<QuestionVO> response = new ArrayList<>();
         for (QuestionEntity questionEntity : all) {
@@ -150,7 +157,7 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
             response.add(questionVO);
         }
 
-        return new Response<>(new DataVO<>(response));
+        return new Response<>(new DataVO<>(response), 200);
     }
 
     public Response<DataVO<List<QuestionVO>>> getAll(String name, QuestionStatus level, Integer numberOfQuestion) {

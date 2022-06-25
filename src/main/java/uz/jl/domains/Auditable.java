@@ -13,7 +13,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @Builder
 @MappedSuperclass
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Auditable implements BaseDomain {
 
     @Id
