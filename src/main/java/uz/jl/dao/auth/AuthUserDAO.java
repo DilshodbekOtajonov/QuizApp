@@ -43,7 +43,7 @@ public class AuthUserDAO extends GenericDAO<AuthUser, Long> {
         Session session = getSession();
         session.beginTransaction();
         Query<AuthUser> query = session
-                .createQuery("select t from AuthUser t where lower(t.email) = lower(:email) ",
+                .createQuery("select t from AuthUser t where lower(t.email) = lower(:email) and t.deleted=false ",
                         AuthUser.class);
         query.setParameter("email", email);
         Optional<AuthUser> result = Optional.ofNullable(query.getSingleResultOrNull());
@@ -54,7 +54,7 @@ public class AuthUserDAO extends GenericDAO<AuthUser, Long> {
     public List<AuthUser> findAll(AuthRole role) {
         Session session = getSession();
         session.beginTransaction();
-        List<AuthUser> resultList = session.createQuery("select t from AuthUser t where t.role=:role", AuthUser.class).setParameter("role", role).getResultList();
+        List<AuthUser> resultList = session.createQuery("select t from AuthUser t where t.role=:role and t.deleted=false ", AuthUser.class).setParameter("role", role).getResultList();
         session.close();
         return resultList;
     }

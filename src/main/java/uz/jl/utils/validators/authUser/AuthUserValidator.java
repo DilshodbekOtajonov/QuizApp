@@ -30,6 +30,7 @@ public class AuthUserValidator extends GenericValidator<AuthUserCreateVO, AuthUs
     public void validOnCreate(AuthUserCreateVO vo) throws ValidationException {
         existsByUsername(vo.getUsername());
         existsByEmail(vo.getEmail());
+
     }
 
 

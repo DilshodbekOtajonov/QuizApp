@@ -1,10 +1,7 @@
 package uz.jl.domains.auth;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import uz.jl.domains.subject.SubjectEntity;
 
 import java.util.List;
@@ -20,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
+@ToString
 public class TeacherEntity {
 
 
@@ -28,13 +26,13 @@ public class TeacherEntity {
     private Long id;
     private String name;
     private String surname;
-    @ManyToMany(targetEntity = SubjectEntity.class, cascade = CascadeType.MERGE)
+    @ManyToMany(targetEntity = SubjectEntity.class, cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
     @JoinTable(name = "teacher_subject",
             joinColumns = @JoinColumn(name = "teacher_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id"),
             schema = "subject"
     )
-    private List<StudentEntity> subjectList;
+    private List<SubjectEntity> subjectList;
     @OneToOne(targetEntity = AuthUser.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id", nullable = false)
     private AuthUser user;

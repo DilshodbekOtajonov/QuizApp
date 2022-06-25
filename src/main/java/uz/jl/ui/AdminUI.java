@@ -56,7 +56,7 @@ public class AdminUI {
                 case "2" -> showTeacherList();
                 case "3" -> showQuestionList();
                 case "4" -> questionCreate();
-                case "5" -> questionDelete();
+                case "6" -> questionDelete();
                 case "7" -> setRoleToUser();
                 case "8" -> changeAuthInfo();
                 case "9" -> subjectCreate();

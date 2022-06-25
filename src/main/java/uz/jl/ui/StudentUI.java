@@ -70,13 +70,13 @@ public class StudentUI {
 
         BaseUtils.println("1.Change username");
         BaseUtils.println("2.Change password");
+        BaseUtils.println("default go back");
         String option = BaseUtils.readText("Choose option: ");
         switch (option) {
             case "1" -> changeUserName();
             case "2" -> changePassword();
-            default -> BaseUtils.println("Wrong option");
+            default -> BaseUtils.println("Wrong option", Colors.RED);
         }
-
     }
 
     public static void changePassword() {
@@ -89,6 +89,7 @@ public class StudentUI {
         Response<DataVO<Void>> response = authUserService.changePassword(resetVO);
         if (response.getStatus() != 200)
             print_response(response);
+        else BaseUtils.println("Done", Colors.GREEN);
 
     }
 
@@ -97,6 +98,7 @@ public class StudentUI {
         Response<DataVO<Void>> response = authUserService.changeUsername(newUsername);
         if (response.getStatus() != 200)
             print_response(response);
+        else BaseUtils.println("Done", Colors.GREEN);
     }
 
 
@@ -199,7 +201,6 @@ public class StudentUI {
         String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
         BaseUtils.println(BaseUtils.gson.toJson(response), color);
     }
-
 
     private VariantEntity createVariant() {
         Response<DataVO<List<SubjectVO>>> subjectListResponse = subjectService.getAll();

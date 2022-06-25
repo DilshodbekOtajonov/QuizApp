@@ -26,7 +26,7 @@ public class SubjectDAO extends GenericDAO<SubjectEntity, Long> {
         Session session = getSession();
         session.beginTransaction();
 
-        SubjectEntity result = session.createQuery("select t from SubjectEntity t where  lower(t.title) = lower(:name) ", SubjectEntity.class)
+        SubjectEntity result = session.createQuery("select t from SubjectEntity t where  lower(t.title) = lower(:name) and t.deleted=false ", SubjectEntity.class)
                 .setParameter("name", name)
                 .getSingleResultOrNull();
 

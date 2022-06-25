@@ -30,7 +30,7 @@ public class VariantDAO extends GenericDAO<VariantEntity, Long> {
         Session session = getSession();
         session.beginTransaction();
 
-        List<VariantEntity> result = session.createQuery("select t from VariantEntity t where t.user.id=:studentId", VariantEntity.class)
+        List<VariantEntity> result = session.createQuery("select t from VariantEntity t where t.user.id=:studentId and t.deleted=false ", VariantEntity.class)
                 .setParameter("studentId", studentId).getResultList();
 
         session.getTransaction().commit();
