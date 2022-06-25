@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 ;
 
 public class QuestionService extends AbstractDAO<QuestionDAO> implements GenericCRUDService<
@@ -93,7 +94,29 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
 
     @Override
     public Response<DataVO<Void>> update(@NonNull QuestionUpdateVO vo) {
-        return null;
+        QuestionEntity byId = dao.findById(vo.id);
+
+        Optional<QuestionEntity> findById = Optional.ofNullable(dao.findById(vo.id));
+        if (findById.isEmpty())
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Question not found")
+                    .build()), 500);
+
+        QuestionEntity questionEntity = findById.get();
+
+        if (Objects.nonNull(vo.body)){
+            questionEntity.setBody(vo.body);
+        }
+
+        if (Objects.nonNull(vo.status)){
+            questionEntity.setStatus(vo.status);
+        }
+
+
+
+        dao.update(questionEntity);
+
+        return new Response<>(new DataVO<>(null), 200);
     }
 
     @Override
@@ -116,7 +139,17 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
 
     @Override
     public Response<DataVO<QuestionVO>> get(@NonNull Long aLong) {
-        return null;
+        QuestionEntity questionEntity = dao.findById(aLong);
+        if (Objects.isNull(questionEntity))
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Question not found")
+                    .build()));
+        QuestionVO questionVO = QuestionVO.childBuilder()
+                .id(questionEntity.getId())
+                .body(questionEntity.getBody())
+                .status(questionEntity.getStatus())
+                .build();
+        return new Response<>(new DataVO<>(questionVO));
     }
 
     @Override
@@ -172,7 +205,7 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
             SubjectVO subjectVO = subjectResponse.getData().getBody();
 
 
-            Long subjectId = subjectVO.getId();
+            Long subjectId = subjectVO.id;
             List<QuestionEntity> resultList;
             if (Objects.isNull(level) && Objects.isNull(numberOfQuestion)) {
                 resultList = dao.findAllBySubjectId(subjectId);
@@ -215,6 +248,7 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
                     .build()), 500);
         }
     }
+
 
 
 }

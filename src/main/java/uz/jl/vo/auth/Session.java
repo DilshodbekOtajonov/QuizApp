@@ -32,7 +32,7 @@ public class Session {
 
         public SessionUser(AuthUserVO session) {
 
-            this.id = session.getId();
+            this.id = session.id;
             this.username = session.getUsername();
             this.role = session.getRole();
         }

@@ -4,17 +4,25 @@ import uz.jl.BaseUtils;
 import uz.jl.Colors;
 import uz.jl.configs.ApplicationContextHolder;
 import uz.jl.domains.subject.SubjectEntity;
+import uz.jl.enums.AnswerStatus;
+import uz.jl.enums.QuestionStatus;
+import uz.jl.service.QuestionService;
 import uz.jl.service.SubjectService;
 import uz.jl.service.TeacherService;
+import uz.jl.vo.answer.AnswerCreateVO;
 import uz.jl.vo.auth.Session;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
+import uz.jl.vo.question.QuestionCreateVO;
+import uz.jl.vo.question.QuestionUpdateVO;
 import uz.jl.vo.subject.SubjectVO;
 import uz.jl.vo.teacher.TeacherVO;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static uz.jl.ui.AdminUI.parameterizeWithSubject;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -26,7 +34,12 @@ public class TeacherUI {
     private static final SubjectService subjectService = ApplicationContextHolder.getBean(SubjectService.class);
     private static final TeacherService teacherService = ApplicationContextHolder.getBean(TeacherService.class);
 
+
+    static QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
+
+
     public static void main(String[] args) {
+
 
         if (Objects.nonNull(Session.sessionUser)) {
 
@@ -60,7 +73,7 @@ public class TeacherUI {
         }
 
         List<SubjectEntity> subjectList = subjectListResponse.getData().getBody();
-        BaseUtils.println("Your subjects: ",Colors.PURPLE);
+        BaseUtils.println("Your subjects: ", Colors.PURPLE);
         for (SubjectEntity subject : subjectList) {
             BaseUtils.println(subject.getTitle(), Colors.PURPLE);
         }
@@ -68,7 +81,6 @@ public class TeacherUI {
 
     private static void addSubject() {
 
-        showMySubjects();
 
         Response<DataVO<List<SubjectVO>>> subjectListResponse = subjectService.getAll();
 
@@ -134,9 +146,153 @@ public class TeacherUI {
     }
 
     private static void crud() {
-        BaseUtils.println("create questions-> 1 ");
-        BaseUtils.println("  -> 2");
-        BaseUtils.println("Quit  -> q");
+        BaseUtils.println("Create questions -> 1");
+        BaseUtils.println("Update question  -> 2");
+        BaseUtils.println("Go back          -> 2");
+        BaseUtils.println("Quit             -> q");
+
+        String option = BaseUtils.readText("Insert option: ");
+        switch (option) {
+            case "1" -> questionCreate();
+            case "2" -> updateQuestion();
+
+            }
+        }
+
+
+
+
+    public static void updateQuestion() {
+        showMySubjects();
+        parameterizeWithSubject();
+        Long questionId = Long.valueOf(BaseUtils.readText("Enter question id: "));
+
+
+
+        BaseUtils.println("Update level   -> 1");
+        BaseUtils.println("Update body    -> 2");
+        BaseUtils.println("Back           -> 0");
+
+
+        String option = BaseUtils.readText("Insert option: ");
+        switch (option) {
+            case "1" -> updateLevel(questionId);
+            case "2" -> updateBody(questionId);
+            case "0" ->{return;}
+
+        }
+
+
+    }
+
+
+
+    private static void updateBody(Long questionId) {
+
+
+        String newBody = BaseUtils.readText("Enter body: ");
+        questionService.update(QuestionUpdateVO.childBuilder().id(questionId).body(newBody).build());
+
+
+    }
+
+    private static void updateLevel(Long questionId) {
+        QuestionStatus questionStatus = null;
+
+        BaseUtils.println("EASY   -> 1");
+        BaseUtils.println("MEDIUM -> 2");
+        BaseUtils.println("HARD   -> 3");
+
+        String option = BaseUtils.readText("? ");
+        switch (option) {
+            case "1" -> questionStatus = QuestionStatus.EASY;
+            case "2" -> questionStatus = QuestionStatus.MEDIUM;
+            case "3" -> questionStatus = QuestionStatus.HARD;
+        }
+
+
+        questionService.update(QuestionUpdateVO.childBuilder().id(questionId).status(questionStatus).build());
+    }
+
+    private static void questionCreate() {
+
+        Response<DataVO<List<SubjectEntity>>> subjectListResponse = teacherService.getSubjectList(Session.sessionUser.getId());
+        if (subjectListResponse.getStatus() != 200) {
+            print_response(subjectListResponse);
+            return;
+        }
+
+
+//
+        List<SubjectEntity> subjectList = subjectListResponse.getData().getBody();
+        BaseUtils.println("Your subjects: ", Colors.PURPLE);
+        for (SubjectEntity subject : subjectList) {
+            BaseUtils.println(subject.getTitle(), Colors.PURPLE);
+        }
+
+        boolean flag = false;
+        String option = BaseUtils.readText("Enter subject name: ");
+        for (SubjectEntity subject : subjectList) {
+            if (Objects.equals(subject.getTitle(), option)) {
+                flag = true;
+                break;
+            }
+        }
+
+        if (flag) {
+            QuestionCreateVO vo = QuestionCreateVO.builder()
+                    .body(BaseUtils.readText("body ? "))
+                    .createdBy(Session.sessionUser.getId())
+                    .subjectName(option)
+                    .createdBy(Session.sessionUser.getId())
+                    .build();
+
+            int i = 0;
+            System.out.println("Question status:\n");
+            for (QuestionStatus value : QuestionStatus.values()) {
+                i++;
+                System.out.println(i + " " + value);
+            }
+
+            String choice = BaseUtils.readText("choice ? ");
+            switch (choice) {
+                case "1" -> vo.setStatus(QuestionStatus.EASY);
+                case "2" -> vo.setStatus(QuestionStatus.MEDIUM);
+                case "3" -> vo.setStatus(QuestionStatus.HARD);
+
+                default -> {
+                    BaseUtils.println("Invalid choice");
+                    return;
+                }
+
+            }
+
+            System.out.println("Answer:\n");
+
+            AnswerCreateVO body1 = new AnswerCreateVO();
+            body1.setBody(BaseUtils.readText("Enter the correct answer"));
+            body1.setStatus(AnswerStatus.RIGHT);
+
+            AnswerCreateVO body2 = new AnswerCreateVO();
+            body2.setBody(BaseUtils.readText("Enter the incorrect answer"));
+            body2.setStatus(AnswerStatus.WRONG);
+
+            AnswerCreateVO body3 = new AnswerCreateVO();
+            body3.setBody(BaseUtils.readText("Enter the incorrect answer"));
+            body3.setStatus(AnswerStatus.WRONG);
+
+            AnswerCreateVO body4 = new AnswerCreateVO();
+            body4.setBody(BaseUtils.readText("Enter the incorrect answer"));
+            body4.setStatus(AnswerStatus.WRONG);
+
+            vo.setAnswers(List.of(body1, body2, body3, body4));
+            Response<DataVO<Long>> dataVOResponse = questionService.create(vo);
+            print_response(dataVOResponse);
+
+
+        }
+
+
     }
 
     public static void print_response(Response response) {

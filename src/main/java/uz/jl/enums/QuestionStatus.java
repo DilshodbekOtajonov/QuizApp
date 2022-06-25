@@ -2,6 +2,7 @@ package uz.jl.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -10,6 +11,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
+
 public enum QuestionStatus {
 
     EASY(10),

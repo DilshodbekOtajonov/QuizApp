@@ -87,8 +87,26 @@ public class TeacherService extends AbstractDAO<TeacherDAO> implements GenericCR
     }
 
     @Override
-    public Response<DataVO<TeacherVO>> get(@NonNull Long aLong) {
-        return null;
+    public Response<DataVO<TeacherVO>> get(@NonNull Long userId) {
+
+        TeacherEntity teacherEntity = dao.findByUserId(userId);
+        List<TeacherVO> result = new ArrayList<>();
+        List<SubjectEntity> subjectList = teacherEntity.getSubjectList();
+
+        List<SubjectVO> subjectVOList = new ArrayList<>();
+        for (SubjectEntity subject : subjectList) {
+            SubjectVO build = SubjectVO.childBuilder()
+                    .title(subject.getTitle())
+                    .build();
+            subjectVOList.add(build);
+        }
+            TeacherVO teacherVO = TeacherVO.builder()
+                    .subjectList(subjectVOList).build();
+            result.add(teacherVO);
+
+
+
+        return new Response<>(new DataVO<>(teacherVO));
     }
 
     @Override
@@ -99,11 +117,11 @@ public class TeacherService extends AbstractDAO<TeacherDAO> implements GenericCR
     public Response<DataVO<Void>> addSubjectList(TeacherVO teacherVO) {
         try {
 
-            TeacherEntity teacherEntity = dao.findByUserId(teacherVO.getId());
+            TeacherEntity teacherEntity = dao.findByUserId(teacherVO.id);
             System.out.println(teacherEntity);
             List<SubjectEntity> teacherSubjectList = teacherEntity.getSubjectList();
             for (SubjectVO subjectVO : teacherVO.getSubjectList()) {
-                SubjectEntity subjectEntity = subjectDAO.findById(subjectVO.getId());
+                SubjectEntity subjectEntity = subjectDAO.findById(subjectVO.id);
 
                 if (Objects.isNull(teacherSubjectList))
                     teacherEntity.setSubjectList(new ArrayList<>());
@@ -127,7 +145,7 @@ public class TeacherService extends AbstractDAO<TeacherDAO> implements GenericCR
     public Response<DataVO<List<SubjectEntity>>> getSubjectList(Long userId) {
         try {
             TeacherEntity teacherEntity = dao.findByUserId(userId);
-            if (Objects.isNull(teacherEntity.getSubjectList()))
+            if (teacherEntity.getSubjectList().isEmpty())
                 return new Response<>(new DataVO<>(AppErrorVO.builder()
                         .friendlyMessage("You do not have any subjects")
                         .build()), 500);

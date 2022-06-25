@@ -23,6 +23,8 @@ import uz.jl.vo.subject.SubjectVO;
 import java.util.List;
 import java.util.Objects;
 
+import static uz.jl.ui.TeacherUI.updateQuestion;
+
 /**
  * @author "Otajonov Dilshodbek
  * @since 6/22/22 2:31 PM (Wednesday)
@@ -56,6 +58,7 @@ public class AdminUI {
                 case "2" -> showTeacherList();
                 case "3" -> showQuestionList();
                 case "4" -> questionCreate();
+                case "5" -> updateQuestion();
                 case "6" -> questionDelete();
                 case "7" -> setRoleToUser();
                 case "8" -> changeAuthInfo();
@@ -137,7 +140,7 @@ public class AdminUI {
         }
     }
 
-    private static void parameterizeWithSubject() {
+    public static void parameterizeWithSubject() {
         String subject = BaseUtils.readText("Enter subject name: ");
         Response<DataVO<List<QuestionVO>>> responseList = questionService.getAll(subject, null, null);
 
