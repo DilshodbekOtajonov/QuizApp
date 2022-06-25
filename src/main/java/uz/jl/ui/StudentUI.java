@@ -6,11 +6,13 @@ import uz.jl.configs.ApplicationContextHolder;
 import uz.jl.domains.QA.AnswerEntity;
 import uz.jl.domains.QA.QuestionEntity;
 import uz.jl.domains.QA.VariantEntity;
+import uz.jl.enums.AnswerStatus;
 import uz.jl.enums.QuestionStatus;
 import uz.jl.service.QuestionService;
 import uz.jl.service.SubjectService;
 import uz.jl.service.VariantService;
 import uz.jl.service.auth.AuthUserService;
+import uz.jl.vo.answer.AnswerVO;
 import uz.jl.vo.auth.AuthUserPasswordResetVO;
 import uz.jl.vo.auth.Session;
 import uz.jl.vo.http.DataVO;
@@ -21,10 +23,8 @@ import uz.jl.vo.variant.VariantCreateVO;
 import uz.jl.vo.variant.VariantVO;
 
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -100,12 +100,50 @@ public class StudentUI {
 
 
     private void showHistory() {
-        // TODO: 6/23/22 show list of variants
-        // TODO: 6/23/22 ask id of the one of variants and show variant in details
+
+        Response<DataVO<List<VariantVO>>> allVariants = variantService.getAllByStudentId(Session.sessionUser.getId());
+        if (allVariants.getStatus() != 200) {
+            print_response(allVariants);
+            return;
+        } else {
+            for (VariantVO variantVO : allVariants.getData().getBody()) {
+                BaseUtils.println("Variant id: " + variantVO.id + ", time: " + variantVO.getCreatedAt() + ", status: " + variantVO.getStatus() + ", Number of correct answers: " + variantVO.getNumberOfRightAnswers());
+            }
+        }
+
+        BaseUtils.println("show detailed -1");
+        BaseUtils.println("go back  -2");
+
+        String choice = BaseUtils.readText("choice ? ");
+        switch (choice) {
+
+            case "1" -> BaseUtils.println("");
+
+            case "2" -> {
+                return;
+            }
+            default -> {
+                BaseUtils.println("Invalid option");
+                System.exit(0);
+            }
+        }
+        Long variantId = Long.valueOf(BaseUtils.readText("Enter variantId: "));
+        Response<DataVO<VariantVO>> voResponse = variantService.get(variantId);
+        if (voResponse.getStatus() != 200) {
+            print_response(voResponse);
+        } else {
+            for (QuestionVO question : voResponse.getData().getBody().getQuestions()) {
+                BaseUtils.println("");
+                BaseUtils.println("Question id: " + question.id + ", Body: " + question.getBody() + ", status: " + question.getStatus() + ", subject: " + question.getSubject().getTitle());
+                for (AnswerVO answer : question.getAnswers()) {
+                    BaseUtils.println("Answer: " + answer.getBody() + ", status: " + answer.getStatus());
+                }
+            }
+        }
+
     }
 
     private void doTest() {
-        // TODO: 6/23/22 show result at the end
         try {
             VariantEntity variant = createVariant();
             BaseUtils.println("\n\nStart 1", Colors.YELLOW);
@@ -124,21 +162,35 @@ public class StudentUI {
             BaseUtils.println("Start time " + startTime);
             BaseUtils.println("End time " + endTime);
             BaseUtils.println("You have %s minutes\n".formatted(numberOfQuestion));
+            Integer numberOfRightAnswers = 0;
             for (QuestionEntity question : variant.getQuestions()) {
-                String[] abcs = {"A", "B", "C", "D"};
-                Set<String> abc = new HashSet<>();
 
                 if (LocalTime.now().isAfter(endTime))
                     break;
                 BaseUtils.println(question.getBody(), Colors.PURPLE);
+
+                AnswerEntity rightAnswer = null;
                 List<AnswerEntity> answers = question.getAnswers();
                 for (AnswerEntity answer : answers) {
-                    System.out.println(answer);
+                    System.out.println(answer.getBody());
+                    if (answer.getStatus().equals(AnswerStatus.RIGHT))
+                        rightAnswer = answer;
                 }
+
+                String studentAnswer = BaseUtils.readText("Your answer : ");
+                if (studentAnswer.equalsIgnoreCase(rightAnswer.getBody()))
+                    numberOfRightAnswers++;
+
             }
 
-        } catch (Exception e) {
+            BaseUtils.println("Your result: " + numberOfRightAnswers);
 
+
+            variant.setNumberOfRightAnswers(numberOfRightAnswers);
+            variant.setCompleted(true);
+            variantService.UpdateVariantEntity(variant);
+
+        } catch (Exception e) {
         }
 
     }
@@ -186,7 +238,7 @@ public class StudentUI {
                 .userId(Session.sessionUser.getId())
                 .build();
 
-        Response<DataVO<VariantEntity>> variantResponse = variantService.getVariant(variantCreateVO);
+        Response<DataVO<VariantEntity>> variantResponse = variantService.createAndGet(variantCreateVO);
         if (variantResponse.getStatus() != 200) {
             print_response(variantResponse);
             throw new RuntimeException();

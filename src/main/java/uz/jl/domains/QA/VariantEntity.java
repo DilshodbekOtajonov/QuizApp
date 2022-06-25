@@ -1,10 +1,7 @@
 package uz.jl.domains.QA;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import uz.jl.domains.Auditable;
 import uz.jl.domains.auth.AuthUser;
 import uz.jl.enums.QuestionStatus;
@@ -23,8 +20,9 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "variants", schema = "test")
 @Getter
+@Setter
 public class VariantEntity extends Auditable {
-    @OneToOne(targetEntity = AuthUser.class,cascade = CascadeType.MERGE)
+    @OneToOne(targetEntity = AuthUser.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     private AuthUser user;
     @Enumerated(EnumType.STRING)
@@ -33,7 +31,7 @@ public class VariantEntity extends Auditable {
     @Column(columnDefinition = "smallint default 0", nullable = false)
     @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     private Boolean completed;
-    @ManyToMany(targetEntity = QuestionEntity.class, cascade = CascadeType.MERGE)
+    @ManyToMany(targetEntity = QuestionEntity.class, cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
     @JoinTable(name = "variant_question",
             joinColumns = @JoinColumn(name = "variant_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id"),
@@ -43,12 +41,17 @@ public class VariantEntity extends Auditable {
     @Column(name = "result")
     private Integer numberOfRightAnswers;
 
+    @Column(name = "questions")
+    private Integer numberOfQuestions;
+
     @Builder(builderMethodName = "childBuilder")
-    public VariantEntity(Long id, Timestamp createdAt, Long createdBy, Timestamp updatedAt, Long updatedBy, Boolean deleted, AuthUser user, List<QuestionEntity> questions, Integer numberOfRightAnswers) {
+    public VariantEntity(Long id, Timestamp createdAt, Long createdBy, Timestamp updatedAt, Long updatedBy, Boolean deleted,
+                         AuthUser user, List<QuestionEntity> questions, Integer numberOfRightAnswers, Integer numberOfQuestions) {
         super(id, createdAt, createdBy, updatedAt, updatedBy, deleted);
         this.user = user;
         this.questions = questions;
         this.numberOfRightAnswers = numberOfRightAnswers;
         this.completed = false;
+        this.numberOfQuestions = numberOfQuestions;
     }
 }

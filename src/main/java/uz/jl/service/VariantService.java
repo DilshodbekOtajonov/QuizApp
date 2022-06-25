@@ -12,20 +12,22 @@ import uz.jl.domains.QA.QuestionEntity;
 import uz.jl.domains.QA.VariantEntity;
 import uz.jl.domains.auth.AuthUser;
 import uz.jl.domains.subject.SubjectEntity;
-import uz.jl.enums.QuestionStatus;
 import uz.jl.utils.BaseUtils;
 import uz.jl.utils.validators.variantValidators.VariantValidator;
 import uz.jl.vo.answer.AnswerVO;
+import uz.jl.vo.auth.Session;
 import uz.jl.vo.http.AppErrorVO;
 import uz.jl.vo.http.DataVO;
 import uz.jl.vo.http.Response;
 import uz.jl.vo.question.QuestionVO;
+import uz.jl.vo.subject.SubjectVO;
 import uz.jl.vo.variant.VariantCreateVO;
 import uz.jl.vo.variant.VariantUpdateVO;
 import uz.jl.vo.variant.VariantVO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -61,7 +63,7 @@ public class VariantService extends AbstractDAO<VariantDAO> implements GenericCR
         return null;
     }
 
-    public Response<DataVO<VariantEntity>> getVariant(@NonNull VariantCreateVO vo) {
+    public Response<DataVO<VariantEntity>> createAndGet(@NonNull VariantCreateVO vo) {
         try {
             validator.validOnCreate(vo);
             SubjectEntity subjectEntity = subjectDAO.findByName(vo.getSubjectName());
@@ -71,18 +73,18 @@ public class VariantService extends AbstractDAO<VariantDAO> implements GenericCR
             VariantEntity variantEntity = VariantEntity.childBuilder()
                     .questions(questionEntitiesList)
                     .user(authUser)
-                    .numberOfRightAnswers(vo.getNumberOfQuestions())
+                    .numberOfRightAnswers(0)
+                    .numberOfQuestions(vo.getNumberOfQuestions())
                     .build();
 
             VariantEntity save = dao.save(variantEntity);
 
 
-            return new Response<>(new DataVO<>(save),200);
+            return new Response<>(new DataVO<>(save), 200);
         } catch (Exception e) {
-            e.printStackTrace();
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage(e.getMessage())
-                    .build()),400);
+                    .build()), 400);
         }
     }
 
@@ -98,12 +100,80 @@ public class VariantService extends AbstractDAO<VariantDAO> implements GenericCR
     }
 
     @Override
-    public Response<DataVO<VariantVO>> get(@NonNull Long aLong) {
-        return null;
+    public Response<DataVO<VariantVO>> get(@NonNull Long variantId) {
+        VariantEntity variantEntity = dao.findById(variantId);
+        if (Objects.isNull(variantEntity))
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Variant not found by id")
+                    .build()), 400);
+
+        VariantVO variantVO = map(variantEntity);
+
+        return new Response<>(new DataVO<>(variantVO), 200);
     }
 
     @Override
     public Response<DataVO<List<VariantVO>>> getAll() {
         return null;
+    }
+
+    public void UpdateVariantEntity(VariantEntity variant) {
+        dao.update(variant);
+    }
+
+    public Response<DataVO<List<VariantVO>>> getAllByStudentId(Long studentId) {
+        List<VariantEntity> all = dao.findByStudentId(Session.sessionUser.getId());
+
+        if (all.isEmpty()) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("No variants found").build()), 404);
+        }
+
+        List<VariantVO> response = new ArrayList<>();
+        for (VariantEntity variantEntity : all) {
+            VariantVO variantVO = map(variantEntity);
+            response.add(variantVO);
+        }
+        return new Response<>(new DataVO<>(response), 200);
+    }
+
+    private static VariantVO map(VariantEntity variantEntity) {
+        VariantVO variantVO = VariantVO.childBuilder()
+                .id(variantEntity.getId())
+                .createdAt(variantEntity.getCreatedAt())
+                .status(variantEntity.getStatus())
+                .numberOfRightAnswers(variantEntity.getNumberOfRightAnswers()).build();
+
+        List<QuestionVO> questionVOList = new ArrayList<>();
+
+        for (QuestionEntity questionEntity : variantEntity.getQuestions()) {
+            SubjectEntity subject = questionEntity.getSubject();
+
+            SubjectVO subjectVO = SubjectVO.childBuilder()
+                    .id(subject.getId())
+                    .title(subject.getTitle())
+                    .build();
+
+            QuestionVO questionVO = QuestionVO.childBuilder()
+                    .id(questionEntity.getId())
+                    .body(questionEntity.getBody())
+                    .status(questionEntity.getStatus())
+                    .subject(subjectVO)
+                    .build();
+
+            List<AnswerVO> answerVOList = new ArrayList<>();
+            for (AnswerEntity answer : questionEntity.getAnswers()) {
+                AnswerVO answerVO = AnswerVO.childBuilder()
+                        .body(answer.getBody())
+                        .id(answer.getId())
+                        .status(answer.getStatus())
+                        .build();
+                answerVOList.add(answerVO);
+            }
+            questionVO.setAnswers(answerVOList);
+            questionVOList.add(questionVO);
+        }
+        variantVO.setQuestions(questionVOList);
+        return variantVO;
     }
 }

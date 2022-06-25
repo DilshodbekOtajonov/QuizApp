@@ -127,7 +127,7 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         if (userByUsername.isEmpty())
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("user not found")
-                    .build()));
+                    .build()),404);
 
         AuthUser authUser = userByUsername.get();
 
@@ -135,7 +135,7 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         if (!hasPasswordMatched)
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("Bad credentials")
-                    .build()));
+                    .build()),400);
 
         AuthUserVO authUserVO = AuthUserVO.childBuilder()
                 .username(authUser.getUsername())
