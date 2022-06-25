@@ -101,13 +101,16 @@ public class TeacherService extends AbstractDAO<TeacherDAO> implements GenericCR
 
             TeacherEntity teacherEntity = dao.findByUserId(teacherVO.getId());
             System.out.println(teacherEntity);
-
+            List<SubjectEntity> teacherSubjectList = teacherEntity.getSubjectList();
             for (SubjectVO subjectVO : teacherVO.getSubjectList()) {
                 SubjectEntity subjectEntity = subjectDAO.findById(subjectVO.getId());
-                if (Objects.isNull(teacherEntity.getSubjectList()))
+
+                if (Objects.isNull(teacherSubjectList))
                     teacherEntity.setSubjectList(new ArrayList<>());
-                if (!teacherEntity.getSubjectList().contains(subjectEntity))
+                if (!teacherSubjectList.contains(subjectEntity)) {
+                    System.out.println("teacherSubjectList.contains(subjectEntity) = " + teacherSubjectList.contains(subjectEntity));
                     teacherEntity.getSubjectList().add(subjectEntity);
+                }
             }
             dao.update(teacherEntity);
 
@@ -116,8 +119,24 @@ public class TeacherService extends AbstractDAO<TeacherDAO> implements GenericCR
             e.printStackTrace();
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("Oops something went wrong")
-                    .build()));
+                    .build()), 400);
 
+        }
+    }
+
+    public Response<DataVO<List<SubjectEntity>>> getSubjectList(Long userId) {
+        try {
+            TeacherEntity teacherEntity = dao.findByUserId(userId);
+            if (Objects.isNull(teacherEntity.getSubjectList()))
+                return new Response<>(new DataVO<>(AppErrorVO.builder()
+                        .friendlyMessage("You do not have any subjects")
+                        .build()), 500);
+
+            return new Response<>(new DataVO<>(teacherEntity.getSubjectList()), 200);
+        } catch (Exception e) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Oops something went wrong")
+                    .build()), 400);
         }
     }
 }

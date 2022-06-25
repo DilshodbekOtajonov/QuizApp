@@ -3,6 +3,7 @@ package uz.jl.ui;
 import uz.jl.BaseUtils;
 import uz.jl.Colors;
 import uz.jl.configs.ApplicationContextHolder;
+import uz.jl.domains.subject.SubjectEntity;
 import uz.jl.service.SubjectService;
 import uz.jl.service.TeacherService;
 import uz.jl.vo.auth.Session;
@@ -28,9 +29,11 @@ public class TeacherUI {
     public static void main(String[] args) {
 
         if (Objects.nonNull(Session.sessionUser)) {
+
             BaseUtils.println("CRUD questions -> 1 ");
             BaseUtils.println("Settings  -> 2");
             BaseUtils.println("add subject  -> 3");
+            BaseUtils.println("Show my subjects  -> 4");
             BaseUtils.println("Log Out  -> l");
             BaseUtils.println("Quit  -> q");
 
@@ -40,6 +43,7 @@ public class TeacherUI {
                 case "1" -> crud();
                 case "2" -> settings();
                 case "3" -> addSubject();
+                case "4" -> showMySubjects();
                 case "l" -> Session.setSessionUser(null);
                 case "q" -> System.exit(0);
                 default -> BaseUtils.println("Wrong option");
@@ -48,7 +52,24 @@ public class TeacherUI {
         }
     }
 
+    private static void showMySubjects() {
+        Response<DataVO<List<SubjectEntity>>> subjectListResponse = teacherService.getSubjectList(Session.sessionUser.getId());
+        if (subjectListResponse.getStatus() != 200) {
+            print_response(subjectListResponse);
+            return;
+        }
+
+        List<SubjectEntity> subjectList = subjectListResponse.getData().getBody();
+        BaseUtils.println("Your subjects: ",Colors.PURPLE);
+        for (SubjectEntity subject : subjectList) {
+            BaseUtils.println(subject.getTitle(), Colors.PURPLE);
+        }
+    }
+
     private static void addSubject() {
+
+        showMySubjects();
+
         Response<DataVO<List<SubjectVO>>> subjectListResponse = subjectService.getAll();
 
         if (subjectListResponse.getStatus() != 200) {
@@ -57,6 +78,7 @@ public class TeacherUI {
         }
         List<SubjectVO> subjectList = subjectListResponse.getData().getBody();
 
+        BaseUtils.println("Choose subject", Colors.YELLOW);
         for (SubjectVO subjectVO : subjectList) {
             BaseUtils.println(subjectVO, Colors.YELLOW);
         }
@@ -91,7 +113,9 @@ public class TeacherUI {
 
         Response<DataVO<Void>> dataVOResponse = teacherService.addSubjectList(teacherVO);
 
-        print_response(dataVOResponse);
+        if (dataVOResponse.getStatus() != 200)
+            print_response(dataVOResponse);
+        else BaseUtils.println("Done");
 
 
     }

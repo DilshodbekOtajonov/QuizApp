@@ -181,6 +181,7 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
     }
 
     public Response<DataVO<Void>> changeUsername(String newUsername) {
+
         Optional<AuthUser> usernameCheck = dao.findByUserName(newUsername);
         if (usernameCheck.isPresent() && !usernameCheck.get().getDeleted())
             return new Response<>(new DataVO<>(AppErrorVO.builder()
