@@ -1,9 +1,12 @@
 package uz.jl.vo.question;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import uz.jl.enums.QuestionStatus;
 import uz.jl.vo.GenericVO;
-import uz.jl.vo.answer.AnswerCreateVO;
+import uz.jl.vo.answer.AnswerVO;
+import uz.jl.vo.subject.SubjectVO;
 
 import java.util.List;
 
@@ -13,26 +16,20 @@ import java.util.List;
  * QuizApp/IntelliJ IDEA
  */
 
+@Getter
+@Setter
 public class QuestionUpdateVO extends GenericVO {
-
-
-    public String body;
-
-    public QuestionStatus status;
-    private List<AnswerCreateVO> answers;
-
-
-    public QuestionUpdateVO(Long id, List<AnswerCreateVO> answers) {
-        super(id);
-
-    }
+    private String body;
+    private QuestionStatus status;
+    private List<AnswerVO> answers;
+    private SubjectVO subject;
 
     @Builder(builderMethodName = "childBuilder")
-
-    public QuestionUpdateVO(Long id, String body, QuestionStatus status, List<AnswerCreateVO> answers) {
+    public QuestionUpdateVO(Long id, String body, QuestionStatus status, List<AnswerVO> answers, SubjectVO subject) {
         super(id);
         this.body = body;
         this.status = status;
         this.answers = answers;
+        this.subject = subject;
     }
 }

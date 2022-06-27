@@ -169,6 +169,11 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
                         .build()), 500);
             AuthUser authUser = findById.get();
 
+            if (authUser.getRole().equals(AuthRole.ADMIN))
+                return new Response<>(new DataVO<>(AppErrorVO.builder()
+                        .friendlyMessage("You can not change admins' role")
+                        .build()),400);
+
             authUser.setRole(option);
 
             dao.update(authUser);

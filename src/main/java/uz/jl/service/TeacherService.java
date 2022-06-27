@@ -32,8 +32,8 @@ public class TeacherService extends AbstractDAO<TeacherDAO> implements GenericCR
         Long> {
 
     private final TeacherValidator teacherValidator = ApplicationContextHolder.getBean(TeacherValidator.class);
-    private static AuthUserDAO authUserDAO = ApplicationContextHolder.getBean(AuthUserDAO.class);
-    private static SubjectDAO subjectDAO = ApplicationContextHolder.getBean(SubjectDAO.class);
+    private static final AuthUserDAO authUserDAO = ApplicationContextHolder.getBean(AuthUserDAO.class);
+    private static final SubjectDAO subjectDAO = ApplicationContextHolder.getBean(SubjectDAO.class);
     private static TeacherService instance;
 
     public static TeacherService getInstance() {
@@ -88,25 +88,26 @@ public class TeacherService extends AbstractDAO<TeacherDAO> implements GenericCR
 
     @Override
     public Response<DataVO<TeacherVO>> get(@NonNull Long userId) {
+        try {
+            TeacherEntity teacherEntity = dao.findByUserId(userId);
+            List<SubjectEntity> subjectList = teacherEntity.getSubjectList();
 
-        TeacherEntity teacherEntity = dao.findByUserId(userId);
-        List<TeacherVO> result = new ArrayList<>();
-        List<SubjectEntity> subjectList = teacherEntity.getSubjectList();
-
-        List<SubjectVO> subjectVOList = new ArrayList<>();
-        for (SubjectEntity subject : subjectList) {
-            SubjectVO build = SubjectVO.childBuilder()
-                    .title(subject.getTitle())
-                    .build();
-            subjectVOList.add(build);
-        }
+            List<SubjectVO> subjectVOList = new ArrayList<>();
+            for (SubjectEntity subject : subjectList) {
+                SubjectVO build = SubjectVO.childBuilder()
+                        .title(subject.getTitle())
+                        .build();
+                subjectVOList.add(build);
+            }
             TeacherVO teacherVO = TeacherVO.builder()
                     .subjectList(subjectVOList).build();
-            result.add(teacherVO);
 
-
-
-        return new Response<>(new DataVO<>(teacherVO));
+            return new Response<>(new DataVO<>(teacherVO), 200);
+        } catch (Exception e) {
+            return new Response<>(new DataVO<>(AppErrorVO.builder()
+                    .friendlyMessage("Oops something went wrong")
+                    .build()), 400);
+        }
     }
 
     @Override
@@ -117,14 +118,16 @@ public class TeacherService extends AbstractDAO<TeacherDAO> implements GenericCR
     public Response<DataVO<Void>> addSubjectList(TeacherVO teacherVO) {
         try {
 
-            TeacherEntity teacherEntity = dao.findByUserId(teacherVO.id);
-            System.out.println(teacherEntity);
+            TeacherEntity teacherEntity = dao.findByUserId(teacherVO.getId());
+
             List<SubjectEntity> teacherSubjectList = teacherEntity.getSubjectList();
             for (SubjectVO subjectVO : teacherVO.getSubjectList()) {
-                SubjectEntity subjectEntity = subjectDAO.findById(subjectVO.id);
+                SubjectEntity subjectEntity = subjectDAO.findById(subjectVO.getId());
 
-                if (Objects.isNull(teacherSubjectList))
+                if (Objects.isNull(teacherSubjectList)) {
                     teacherEntity.setSubjectList(new ArrayList<>());
+                    break;
+                }
                 if (!teacherSubjectList.contains(subjectEntity)) {
                     System.out.println("teacherSubjectList.contains(subjectEntity) = " + teacherSubjectList.contains(subjectEntity));
                     teacherEntity.getSubjectList().add(subjectEntity);
@@ -145,13 +148,14 @@ public class TeacherService extends AbstractDAO<TeacherDAO> implements GenericCR
     public Response<DataVO<List<SubjectEntity>>> getSubjectList(Long userId) {
         try {
             TeacherEntity teacherEntity = dao.findByUserId(userId);
-            if (teacherEntity.getSubjectList().isEmpty())
+            if (Objects.isNull(teacherEntity) || Objects.isNull(teacherEntity.getSubjectList()))
                 return new Response<>(new DataVO<>(AppErrorVO.builder()
                         .friendlyMessage("You do not have any subjects")
                         .build()), 500);
 
             return new Response<>(new DataVO<>(teacherEntity.getSubjectList()), 200);
         } catch (Exception e) {
+            e.printStackTrace();
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("Oops something went wrong")
                     .build()), 400);

@@ -50,9 +50,10 @@ public class UserUI {
                 .build();
 
 
-
         Response<DataVO<Long>> response = teacherService.create(vo);
         print_response(response);
+        if (response.getStatus() != 200)
+            return;
 
         authUserService.setRole(Session.sessionUser.getId(), AuthRole.TEACHER);
         Session.sessionUser.setRole(AuthRole.TEACHER);
@@ -65,7 +66,8 @@ public class UserUI {
                 .build();
         Response<DataVO<Long>> response = studentService.create(vo);
         print_response(response);
-
+        if (response.getStatus() != 200)
+            return;
         authUserService.setRole(Session.sessionUser.getId(), AuthRole.STUDENT);
         Session.sessionUser.setRole(AuthRole.STUDENT);
     }

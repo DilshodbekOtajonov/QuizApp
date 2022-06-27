@@ -88,49 +88,52 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage(e.getMessage())
                     .build()), 400);
-
         }
     }
 
     @Override
     public Response<DataVO<Void>> update(@NonNull QuestionUpdateVO vo) {
-        QuestionEntity byId = dao.findById(vo.id);
+        try {
+            Optional<QuestionEntity> findById = Optional.ofNullable(dao.findById(vo.id));
+            if (findById.isEmpty())
+                return new Response<>(new DataVO<>(AppErrorVO.builder()
+                        .friendlyMessage("Question not found")
+                        .build()), 500);
 
-        Optional<QuestionEntity> findById = Optional.ofNullable(dao.findById(vo.id));
-        if (findById.isEmpty())
+            QuestionEntity questionEntity = findById.get();
+
+            if (Objects.nonNull(vo.getId())) {
+                questionEntity.setBody(vo.getBody());
+            }
+
+            if (Objects.nonNull(vo.getStatus())) {
+                questionEntity.setStatus(vo.getStatus());
+            }
+
+
+            dao.update(questionEntity);
+
+            return new Response<>(new DataVO<>(null), 200);
+        } catch (Exception e) {
             return new Response<>(new DataVO<>(AppErrorVO.builder()
-                    .friendlyMessage("Question not found")
-                    .build()), 500);
-
-        QuestionEntity questionEntity = findById.get();
-
-        if (Objects.nonNull(vo.body)){
-            questionEntity.setBody(vo.body);
+                    .friendlyMessage("Oops something went wrong")
+                    .build()), 400);
         }
-
-        if (Objects.nonNull(vo.status)){
-            questionEntity.setStatus(vo.status);
-        }
-
-
-
-        dao.update(questionEntity);
-
-        return new Response<>(new DataVO<>(null), 200);
     }
 
     @Override
     public Response<DataVO<Void>> delete(@NonNull Long questionId) {
-        QuestionEntity questionEntity = dao.findById(questionId);
-        if (Objects.isNull(questionEntity)) {
-            return new Response<>(new DataVO<>(AppErrorVO.builder()
-                    .friendlyMessage("Question not found by id")
-                    .build()), 404);
-        }
         try {
-            dao.deleteById(questionId);
-            return new Response<>(new DataVO<>(null));
-        } catch (SQLException e) {
+            QuestionEntity questionEntity = dao.findById(questionId);
+            if (Objects.isNull(questionEntity)) {
+                return new Response<>(new DataVO<>(AppErrorVO.builder()
+                        .friendlyMessage("Question not found by id")
+                        .build()), 404);
+            }
+            questionEntity.setDeleted(true);
+            dao.update(questionEntity);
+            return new Response<>(new DataVO<>(null), 200);
+        } catch (Exception e) {
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("Oops something went wrong")
                     .build()), 500);
@@ -143,13 +146,13 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
         if (Objects.isNull(questionEntity))
             return new Response<>(new DataVO<>(AppErrorVO.builder()
                     .friendlyMessage("Question not found")
-                    .build()));
+                    .build()), 500);
         QuestionVO questionVO = QuestionVO.childBuilder()
                 .id(questionEntity.getId())
                 .body(questionEntity.getBody())
                 .status(questionEntity.getStatus())
                 .build();
-        return new Response<>(new DataVO<>(questionVO));
+        return new Response<>(new DataVO<>(questionVO), 200);
     }
 
     @Override
@@ -205,7 +208,7 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
             SubjectVO subjectVO = subjectResponse.getData().getBody();
 
 
-            Long subjectId = subjectVO.id;
+            Long subjectId = subjectVO.getId();
             List<QuestionEntity> resultList;
             if (Objects.isNull(level) && Objects.isNull(numberOfQuestion)) {
                 resultList = dao.findAllBySubjectId(subjectId);
@@ -248,7 +251,6 @@ public class QuestionService extends AbstractDAO<QuestionDAO> implements Generic
                     .build()), 500);
         }
     }
-
 
 
 }

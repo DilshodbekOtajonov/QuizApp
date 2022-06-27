@@ -7,6 +7,7 @@ import uz.jl.dao.GenericDAO;
 import uz.jl.domains.QA.QuestionEntity;
 import uz.jl.enums.QuestionStatus;
 
+import java.sql.SQLException;
 import java.util.List;
 
 
@@ -58,5 +59,4 @@ public class QuestionDAO extends GenericDAO<QuestionEntity, Long> {
         session.close();
         return entityList;
     }
-
 }

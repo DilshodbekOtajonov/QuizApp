@@ -28,7 +28,7 @@ public class TeacherDAO extends GenericDAO<TeacherEntity, Long> {
 
         TeacherEntity teacherEntity = session.createQuery("select t from TeacherEntity t where t.user.id=:userId", TeacherEntity.class)
                 .setParameter("userId", userId)
-                .getSingleResult();
+                .getSingleResultOrNull();
 
         session.getTransaction().commit();
         session.close();

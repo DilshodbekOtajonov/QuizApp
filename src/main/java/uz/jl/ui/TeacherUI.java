@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static uz.jl.ui.AdminUI.parameterizeWithSubject;
-
 /**
  * @author "Otajonov Dilshodbek
  * @since 6/23/22 8:08 AM (Thursday)
@@ -33,13 +31,9 @@ public class TeacherUI {
 
     private static final SubjectService subjectService = ApplicationContextHolder.getBean(SubjectService.class);
     private static final TeacherService teacherService = ApplicationContextHolder.getBean(TeacherService.class);
-
-
-    static QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
-
+    private static final QuestionService questionService = ApplicationContextHolder.getBean(QuestionService.class);
 
     public static void main(String[] args) {
-
 
         if (Objects.nonNull(Session.sessionUser)) {
 
@@ -81,6 +75,7 @@ public class TeacherUI {
 
     private static void addSubject() {
 
+        showMySubjects();
 
         Response<DataVO<List<SubjectVO>>> subjectListResponse = subjectService.getAll();
 
@@ -99,7 +94,7 @@ public class TeacherUI {
                 .id(Session.sessionUser.getId())
                 .subjectList(new ArrayList<>())
                 .build();
-        label:
+
         while (true) {
             String subjectName = BaseUtils.readText("enter name: ");
             Response<DataVO<SubjectVO>> subjectResponse = subjectService.get(subjectName);
@@ -113,15 +108,10 @@ public class TeacherUI {
             BaseUtils.println("Done  -> default");
             String choice = BaseUtils.readText("choice ? ");
 
-            switch (choice) {
-                case "1" -> {
-                    continue;
-                }
-                default -> {
-                    break label;
-                }
-            }
+            if (!choice.equals("1"))
+                break;
         }
+
 
         Response<DataVO<Void>> dataVOResponse = teacherService.addSubjectList(teacherVO);
 
@@ -145,28 +135,35 @@ public class TeacherUI {
 
     }
 
+
+    public static void print_response(Response response) {
+        String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
+        BaseUtils.println(BaseUtils.gson.toJson(response), color);
+    }
+
+
     private static void crud() {
         BaseUtils.println("Create questions -> 1");
         BaseUtils.println("Update question  -> 2");
-        BaseUtils.println("Go back          -> 2");
+        BaseUtils.println("Go back          -> 3");
+        BaseUtils.println("Log out          -> l");
         BaseUtils.println("Quit             -> q");
 
         String option = BaseUtils.readText("Insert option: ");
         switch (option) {
             case "1" -> questionCreate();
             case "2" -> updateQuestion();
-
+            case "l" -> Session.setSessionUser(null);
+            case "q" -> {
+                BaseUtils.println("Bye");
+                System.exit(0);
             }
         }
-
-
+    }
 
 
     public static void updateQuestion() {
-        showMySubjects();
-        parameterizeWithSubject();
         Long questionId = Long.valueOf(BaseUtils.readText("Enter question id: "));
-
 
 
         BaseUtils.println("Update level   -> 1");
@@ -178,20 +175,26 @@ public class TeacherUI {
         switch (option) {
             case "1" -> updateLevel(questionId);
             case "2" -> updateBody(questionId);
-            case "0" ->{return;}
-
+            case "0" -> {
+            }
+            default -> BaseUtils.println("Invalid option");
         }
 
 
     }
 
 
-
     private static void updateBody(Long questionId) {
 
-
         String newBody = BaseUtils.readText("Enter body: ");
-        questionService.update(QuestionUpdateVO.childBuilder().id(questionId).body(newBody).build());
+        Response<DataVO<Void>> update = questionService.update(QuestionUpdateVO.childBuilder()
+                .id(questionId)
+                .body(newBody)
+                .build());
+
+        if (update.getStatus() != 200)
+            print_response(update);
+        else BaseUtils.println("Done");
 
 
     }
@@ -211,7 +214,14 @@ public class TeacherUI {
         }
 
 
-        questionService.update(QuestionUpdateVO.childBuilder().id(questionId).status(questionStatus).build());
+        Response<DataVO<Void>> update = questionService.update(QuestionUpdateVO.childBuilder()
+                .id(questionId)
+                .status(questionStatus)
+                .build());
+
+        if (update.getStatus() != 200)
+            print_response(update);
+        else BaseUtils.println("Done");
     }
 
     private static void questionCreate() {
@@ -222,8 +232,6 @@ public class TeacherUI {
             return;
         }
 
-
-//
         List<SubjectEntity> subjectList = subjectListResponse.getData().getBody();
         BaseUtils.println("Your subjects: ", Colors.PURPLE);
         for (SubjectEntity subject : subjectList) {
@@ -289,14 +297,7 @@ public class TeacherUI {
             Response<DataVO<Long>> dataVOResponse = questionService.create(vo);
             print_response(dataVOResponse);
 
+        } else BaseUtils.println("Subject not found '%s' ".formatted(option));
 
-        }
-
-
-    }
-
-    public static void print_response(Response response) {
-        String color = response.getStatus() != 200 ? Colors.RED : Colors.GREEN;
-        BaseUtils.println(BaseUtils.gson.toJson(response), color);
     }
 }

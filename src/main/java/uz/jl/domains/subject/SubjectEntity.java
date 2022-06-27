@@ -10,6 +10,7 @@ import lombok.ToString;
 import uz.jl.domains.Auditable;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * @author "Otajonov Dilshodbek
@@ -30,5 +31,18 @@ public class SubjectEntity extends Auditable {
     public SubjectEntity(Long id, Timestamp createdAt, Long createdBy, Timestamp updatedAt, Long updatedBy, Boolean deleted, String title) {
         super(id, createdAt, createdBy, updatedAt, updatedBy, deleted);
         this.title = title;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SubjectEntity that = (SubjectEntity) o;
+        return Objects.equals(title, that.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title);
     }
 }

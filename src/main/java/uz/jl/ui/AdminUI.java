@@ -104,7 +104,7 @@ public class AdminUI {
         BaseUtils.println("2.TEACHER");
         BaseUtils.println("3.STUDENT");
 
-        AuthRole role = null;
+        AuthRole role;
 
         String option = BaseUtils.readText("Choose role: ");
 
@@ -172,18 +172,22 @@ public class AdminUI {
 
     private static void showAllQuestionList() {
         Response<DataVO<List<QuestionVO>>> all = questionService.getAll();
-        if(all.getStatus()!=200){
+        if (all.getStatus() != 200) {
             print_response(all);
             return;
         }
         for (QuestionVO questionVO : all.getData().getBody()) {
-            BaseUtils.println(questionVO);
+            BaseUtils.println(questionVO, Colors.YELLOW);
         }
     }
 
     private static void questionDelete() {
         Long questionId = Long.valueOf(BaseUtils.readText("Enter question id ? "));
-        questionService.delete(questionId);
+        Response<DataVO<Void>> delete = questionService.delete(questionId);
+
+        if (delete.getStatus() != 200)
+            print_response(delete);
+        else BaseUtils.println("DONE", Colors.YELLOW);
 
     }
 
@@ -191,7 +195,7 @@ public class AdminUI {
         Response<DataVO<List<AuthUserVO>>> responseList = authUserService.getAll(AuthRole.STUDENT);
         if (responseList.getStatus().equals(200)) {
             for (AuthUserVO authUserVO : responseList.getData().getBody()) {
-                BaseUtils.println(authUserVO);
+                BaseUtils.println(authUserVO, Colors.YELLOW);
             }
         } else print_response(responseList);
     }
@@ -200,7 +204,7 @@ public class AdminUI {
         Response<DataVO<List<AuthUserVO>>> responseList = authUserService.getAll(AuthRole.TEACHER);
         if (responseList.getStatus().equals(200)) {
             for (AuthUserVO authUserVO : responseList.getData().getBody()) {
-                BaseUtils.println(authUserVO);
+                BaseUtils.println(authUserVO, Colors.YELLOW);
             }
         } else print_response(responseList);
     }

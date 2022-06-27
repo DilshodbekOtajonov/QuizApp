@@ -2,6 +2,8 @@ package uz.jl.domains.QA;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import uz.jl.domains.Auditable;
 import uz.jl.domains.subject.SubjectEntity;
 import uz.jl.enums.QuestionStatus;
@@ -26,13 +28,15 @@ public class QuestionEntity extends Auditable {
     private String body;
     @Enumerated(EnumType.STRING)
     private QuestionStatus status;
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<AnswerEntity> answers;
 
 
     @OneToOne(cascade = CascadeType.MERGE, targetEntity = SubjectEntity.class)
     @JoinColumn(name = "subject_id")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private SubjectEntity subject;
 
     @Builder(builderMethodName = "childBuilder")
