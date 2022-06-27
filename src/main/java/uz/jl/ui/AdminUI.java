@@ -39,7 +39,7 @@ public class AdminUI {
     public static void main(String[] args) {
 
         if (Objects.nonNull(Session.sessionUser)) {
-            System.out.println("=================Admin page==================");
+            System.out.println("================= Admin page ==================");
             BaseUtils.println("Show Student List -> 1");
             BaseUtils.println("Show Teacher List -> 2");
             BaseUtils.println("Show Question List -> 3");
@@ -49,7 +49,6 @@ public class AdminUI {
             BaseUtils.println("Set role to User -> 7");
             BaseUtils.println("Change auth info -> 8");
             BaseUtils.println("Subject create -> 9");
-
             BaseUtils.println("Log out-> l");
             BaseUtils.println("Quit -> q");
             String choice = BaseUtils.readText("choice ? ");
@@ -94,7 +93,6 @@ public class AdminUI {
             case "1" -> StudentUI.changeUserName();
             case "2" -> StudentUI.changePassword();
         }
-
     }
 
     private static void setRoleToUser() {

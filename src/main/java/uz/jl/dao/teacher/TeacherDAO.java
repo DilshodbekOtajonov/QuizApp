@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.Session;
 import uz.jl.dao.GenericDAO;
 
-import uz.jl.domains.auth.TeacherEntity;
+import uz.jl.domains.users.TeacherEntity;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TeacherDAO extends GenericDAO<TeacherEntity, Long> {

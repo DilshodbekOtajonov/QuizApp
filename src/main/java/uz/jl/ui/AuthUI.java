@@ -38,8 +38,6 @@ public class AuthUI {
                 }
                 default -> BaseUtils.println("Invalid choice");
             }
-
-
         } else {
             switch (Session.sessionUser.getRole()) {
                 case STUDENT -> StudentUI.main(args);

@@ -1,7 +1,8 @@
-package uz.jl.domains.auth;
+package uz.jl.domains.users;
 
 import jakarta.persistence.*;
 import lombok.*;
+import uz.jl.domains.auth.AuthUser;
 import uz.jl.domains.subject.SubjectEntity;
 
 import java.util.List;

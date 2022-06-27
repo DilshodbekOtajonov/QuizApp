@@ -6,7 +6,7 @@ import uz.jl.dao.AbstractDAO;
 import uz.jl.dao.student.StudentDAO;
 import uz.jl.dao.auth.AuthUserDAO;
 import uz.jl.domains.auth.AuthUser;
-import uz.jl.domains.auth.StudentEntity;
+import uz.jl.domains.users.StudentEntity;
 import uz.jl.exceptions.ValidationException;
 
 import uz.jl.utils.BaseUtils;

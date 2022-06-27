@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-//@Getter
+@Getter
 public class GenericVO implements BaseVO {
     public Long id;
 }
