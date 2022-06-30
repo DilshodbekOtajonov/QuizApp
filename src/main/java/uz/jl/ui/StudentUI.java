@@ -169,12 +169,12 @@ public class StudentUI {
 
                 if (LocalTime.now().isAfter(endTime))
                     break;
-                BaseUtils.println(question.getBody(), Colors.PURPLE);
+                BaseUtils.println("Savol: "+question.getBody(), Colors.PURPLE);
 
                 AnswerEntity rightAnswer = null;
                 List<AnswerEntity> answers = question.getAnswers();
                 for (AnswerEntity answer : answers) {
-                    System.out.println(answer.getBody());
+                    System.out.println("Javob: "+answer.getBody());
                     if (answer.getStatus().equals(AnswerStatus.RIGHT))
                         rightAnswer = answer;
                 }

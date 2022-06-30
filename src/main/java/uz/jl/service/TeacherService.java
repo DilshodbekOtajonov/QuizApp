@@ -129,7 +129,6 @@ public class TeacherService extends AbstractDAO<TeacherDAO> implements GenericCR
                     break;
                 }
                 if (!teacherSubjectList.contains(subjectEntity)) {
-                    System.out.println("teacherSubjectList.contains(subjectEntity) = " + teacherSubjectList.contains(subjectEntity));
                     teacherEntity.getSubjectList().add(subjectEntity);
                 }
             }

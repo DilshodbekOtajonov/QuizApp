@@ -190,7 +190,7 @@ public class AuthUserService extends AbstractDAO<AuthUserDAO> implements Generic
         Optional<AuthUser> usernameCheck = dao.findByUserName(newUsername);
         if (usernameCheck.isPresent() && !usernameCheck.get().getDeleted())
             return new Response<>(new DataVO<>(AppErrorVO.builder()
-                    .friendlyMessage("username '%s' already taken".formatted(newUsername))
+                    .friendlyMessage("username %s already taken".formatted(newUsername))
                     .build()), 400);
 
         AuthUser authUser = dao.findById(Session.sessionUser.getId());

@@ -65,7 +65,6 @@ public class TeacherUI {
             print_response(subjectListResponse);
             return;
         }
-
         List<SubjectEntity> subjectList = subjectListResponse.getData().getBody();
         BaseUtils.println("Your subjects: ", Colors.PURPLE);
         for (SubjectEntity subject : subjectList) {
@@ -111,14 +110,11 @@ public class TeacherUI {
             if (!choice.equals("1"))
                 break;
         }
-
-
         Response<DataVO<Void>> dataVOResponse = teacherService.addSubjectList(teacherVO);
 
         if (dataVOResponse.getStatus() != 200)
             print_response(dataVOResponse);
         else BaseUtils.println("Done");
-
 
     }
 
@@ -179,8 +175,6 @@ public class TeacherUI {
             }
             default -> BaseUtils.println("Invalid option");
         }
-
-
     }
 
 
